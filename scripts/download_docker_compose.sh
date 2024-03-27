@@ -12,7 +12,7 @@ echo "download_docker_compose.sh script started at $(date)"
 YQ_IMAGE_VERSION=4.43.1@sha256:a7df369b3129dc6e1343b86e5e2f5bdee0853631b5de8221deaffd59358237ee
 
 # renovate: datasource=docker depName=bitnami/cosign versioning=docker
-COSIGN_IMAGE_VERSION=1.13.1@sha256:0cede189f264e3939020acd5333d5854fcb60c372cb7f30d7deaefff57ee2965
+COSIGN_IMAGE_VERSION=2.2.3@sha256:31795f4112105a3accd955ce5bf3ddff1219fc2f07f8cbfd4152a108f93e1cc7
 
 GIT_REPO_PATH="${GIT_ORG}/${GIT_REPOSITORY}"
 

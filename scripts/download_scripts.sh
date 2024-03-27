@@ -9,7 +9,7 @@ fi
 echo "download_scripts.sh script started at $(date)"
 
 # renovate: datasource=docker depName=bitnami/cosign versioning=docker
-COSIGN_IMAGE_VERSION=1.13.1@sha256:0cede189f264e3939020acd5333d5854fcb60c372cb7f30d7deaefff57ee2965
+COSIGN_IMAGE_VERSION=2.2.3@sha256:31795f4112105a3accd955ce5bf3ddff1219fc2f07f8cbfd4152a108f93e1cc7
 
 cd "${CHECKOUT_DIRECTORY:-.}" || exit 1
 
