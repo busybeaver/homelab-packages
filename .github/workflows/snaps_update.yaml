@@ -162,7 +162,7 @@ jobs:
 
       - name: GitHub - Create Pull Request
         id: github_create_pr
-        uses: peter-evans/create-pull-request@4e1beaa7521e8b457b572c090b25bd3db56bf1c5 # v5.0.3
+        uses: peter-evans/create-pull-request@70a41aba780001da0a30141984ae2a0c95d8704e # v6.0.2
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           token: ${{ steps.github_generate_app_token.outputs.token }}
