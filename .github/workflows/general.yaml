@@ -25,7 +25,7 @@ jobs:
       contents: read
       statuses: write
 
-    uses: busybeaver/homelab-shared/.github/workflows/general.yaml@39f412cf85ad5669841228356300c8acc214de6f # v1.1.8
+    uses: busybeaver/homelab-shared/.github/workflows/general.yaml@c68c9704e30847006fa1930709651fb5cb12684e # v1.1.22
     with:
       lintDocker: true
     secrets:
