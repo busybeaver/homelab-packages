@@ -36,6 +36,8 @@ ARG NODE_RED_DWD_LOCAL_WEATHER_VERSION=1.0.5
 ARG NODE_RED_OPENWEATHERMAP_VERSION=1.0.1
 # renovate: datasource=npm depName=node-red-contrib-sun-position versioning=npm
 ARG NODE_RED_SUN_POSITION_VERSION=2.2.0-beta3
+# renovate: datasource=npm depName=node-red-contrib-blindcontroller versioning=npm
+ARG NODE_RED_BLIND_CONTROLLER_VERSION=4.8.6
 # renovate: datasource=npm depName=node-red-node-ping versioning=npm
 ARG NODE_RED_NODE_PING_VERSION=0.3.3
 # renovate: datasource=npm depName=node-red-contrib-credentials versioning=npm
@@ -52,6 +54,7 @@ RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CAC
     node-red-contrib-dwd-local-weather@${NODE_RED_DWD_LOCAL_WEATHER_VERSION} \
     node-red-node-openweathermap@${NODE_RED_OPENWEATHERMAP_VERSION} \
     node-red-contrib-sun-position@${NODE_RED_SUN_POSITION_VERSION} \
+    node-red-contrib-blindcontroller@${NODE_RED_BLIND_CONTROLLER_VERSION} \
     node-red-node-ping@${NODE_RED_NODE_PING_VERSION} \
     node-red-contrib-credentials@${NODE_RED_CREDENTIALS_VERSION}
 
