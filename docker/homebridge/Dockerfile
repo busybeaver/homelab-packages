@@ -6,7 +6,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # renovate: datasource=repology depName=ubuntu_24_04/ca-certificates versioning=loose
 ARG CA_CERTIFICATES_VERSION="20240203"
 # renovate: datasource=repology depName=ubuntu_24_04/curl versioning=loose
-ARG CURL_VERSION="8.5.0-2ubuntu10.1"
+ARG CURL_VERSION="8.5.0-2ubuntu10"
 # renovate: datasource=repology depName=ubuntu_24_04/gnupg2 versioning=loose
 ARG GPG_VERSION="2.4.4-2ubuntu17"
 
