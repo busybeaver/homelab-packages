@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1@sha256:fe40cf4e92cd0c467be2cfc30657a680ae2398318afd50b0c80585784c604f28
+# syntax=docker/dockerfile:1@sha256:38387523653efa0039f8e1c89bb74a30504e76ee9f565e25c9a09841f9427b05
 FROM nodered/node-red:4.0.2-20-minimal@sha256:b63febdc2cf9734d340df42c3bc5bb03f33b38ebfd4316ae7a35cd23baeb0df6
 
 ARG NPM_CACHE_FOLDER="/usr/src/node-red/npm_cache"
@@ -36,6 +36,8 @@ ARG NODE_RED_DWD_LOCAL_WEATHER_VERSION=1.0.5
 ARG NODE_RED_OPENWEATHERMAP_VERSION=1.0.1
 # renovate: datasource=npm depName=node-red-contrib-sun-position versioning=npm
 ARG NODE_RED_SUN_POSITION_VERSION=2.2.0-beta3
+# renovate: datasource=npm depName=node-red-contrib-blindcontroller versioning=npm
+ARG NODE_RED_BLIND_CONTROLLER_VERSION=4.8.6
 # renovate: datasource=npm depName=node-red-node-ping versioning=npm
 ARG NODE_RED_NODE_PING_VERSION=0.3.3
 # renovate: datasource=npm depName=node-red-contrib-credentials versioning=npm
@@ -52,6 +54,7 @@ RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CAC
     node-red-contrib-dwd-local-weather@${NODE_RED_DWD_LOCAL_WEATHER_VERSION} \
     node-red-node-openweathermap@${NODE_RED_OPENWEATHERMAP_VERSION} \
     node-red-contrib-sun-position@${NODE_RED_SUN_POSITION_VERSION} \
+    node-red-contrib-blindcontroller@${NODE_RED_BLIND_CONTROLLER_VERSION} \
     node-red-node-ping@${NODE_RED_NODE_PING_VERSION} \
     node-red-contrib-credentials@${NODE_RED_CREDENTIALS_VERSION}
 

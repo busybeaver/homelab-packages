@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1@sha256:fe40cf4e92cd0c467be2cfc30657a680ae2398318afd50b0c80585784c604f28
+# syntax=docker/dockerfile:1@sha256:38387523653efa0039f8e1c89bb74a30504e76ee9f565e25c9a09841f9427b05
 FROM public.ecr.aws/lts/ubuntu:24.04@sha256:288b44a1b2dfe3788255c3abd41e346bece153b9e066325f461f605425afaf82 as build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -6,7 +6,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # renovate: datasource=repology depName=ubuntu_24_04/ca-certificates versioning=loose
 ARG CA_CERTIFICATES_VERSION="20240203"
 # renovate: datasource=repology depName=ubuntu_24_04/curl versioning=loose
-ARG CURL_VERSION="8.5.0-2ubuntu10.1"
+ARG CURL_VERSION="8.5.0-2ubuntu10"
 # renovate: datasource=repology depName=ubuntu_24_04/gnupg2 versioning=loose
 ARG GPG_VERSION="2.4.4-2ubuntu17"
 
