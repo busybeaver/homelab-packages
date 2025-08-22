@@ -35,7 +35,7 @@ ARG NODE_RED_DWD_LOCAL_WEATHER_VERSION=1.0.5
 # renovate: datasource=npm depName=node-red-node-openweathermap versioning=npm
 ARG NODE_RED_OPENWEATHERMAP_VERSION=1.0.1
 # renovate: datasource=npm depName=node-red-contrib-sun-position versioning=npm
-ARG NODE_RED_SUN_POSITION_VERSION=2.2.0-beta3
+ARG NODE_RED_SUN_POSITION_VERSION=2.2.0-beta4
 # renovate: datasource=npm depName=node-red-contrib-blindcontroller versioning=npm
 ARG NODE_RED_BLIND_CONTROLLER_VERSION=4.8.6
 # renovate: datasource=npm depName=node-red-node-ping versioning=npm
