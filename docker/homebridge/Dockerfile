@@ -28,10 +28,10 @@ COPY --from=build /tmp/homebridge.gpg /etc/apt/trusted.gpg.d/homebridge.gpg
 
 # renovate: datasource=repology depName=ubuntu_24_04/ca-certificates versioning=loose
 ARG CA_CERTIFICATES_VERSION="20240203"
-# renovate: datasource=repology depName=ubuntu_24_04/libcap2 versioning=loose
-ARG LIBCAP_VERSION="1:2.66-5ubuntu2"
+# renovate: datasource=repology depName=ubuntu_24_04/curl versioning=loose
+ARG CURL_VERSION="8.5.0-2ubuntu10.6"
 # renovate: datasource=github-releases depName=homebridge/homebridge-apt-pkg versioning=loose
-ARG HOMEBRIDGE_VERSION="v1.3.4"
+ARG HOMEBRIDGE_VERSION="v1.7.5 - 2025-08-06"
 
 RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     # Setup repository
