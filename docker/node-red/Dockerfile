@@ -27,7 +27,7 @@ ARG NODE_RED_PUSHOVER_VERSION=0.2.1
 # renovate: datasource=npm depName=node-red-contrib-knx-ultimate versioning=npm
 ARG NODE_RED_KNX_ULTIMATE_VERSION=2.5.1
 # renovate: datasource=npm depName=node-red-contrib-sonos-plus versioning=npm
-ARG NODE_RED_SONOS_PLUS_VERSION=6.9.0
+ARG NODE_RED_SONOS_PLUS_VERSION=6.9.3
 # renovate: datasource=npm depName=node-red-contrib-sonos-event versioning=npm
 ARG NODE_RED_SONOS_EVENTS_VERSION=1.2.4
 # renovate: datasource=npm depName=node-red-contrib-dwd-local-weather versioning=npm
