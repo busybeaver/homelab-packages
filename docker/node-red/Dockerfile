@@ -19,7 +19,7 @@ RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk \
 USER node-red
 
 # renovate: datasource=npm depName=node-red-contrib-homekit-bridged versioning=npm
-ARG NODE_RED_HOMEKIT_BRIDGED_VERSION=1.6.1
+ARG NODE_RED_HOMEKIT_BRIDGED_VERSION=1.7.3
 # renovate: datasource=npm depName=node-red-contrib-huemagic versioning=npm
 ARG NODE_RED_HUEMAGIC_VERSION=4.2.2
 # renovate: datasource=npm depName=node-red-node-pushover versioning=npm
