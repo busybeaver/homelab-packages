@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1@sha256:38387523653efa0039f8e1c89bb74a30504e76ee9f565e25c9a09841f9427b05
-FROM ghcr.io/micromdm/micromdm:v1.12.1@sha256:4854deb1a413bffdb81616af1ae14316185dcab51b88c421f0516d8541596bee
+FROM ghcr.io/micromdm/micromdm:v1.13.0@sha256:69b7b09543c0ed0a5181b0085fd821575cc609583e5b0f40e8a1db9a273eb40a
 
 # Enabling the docker healthcheck below
 ENV MICROMDM_HTTP_HOMEPAGE=true
