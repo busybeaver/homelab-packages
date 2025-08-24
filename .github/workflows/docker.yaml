@@ -256,6 +256,11 @@ jobs:
         # we use "sed '1d'" to remove the first line of the output. it contains the name of the container but we only need the XML based JUnit results
         run: DEBUG=true dcgoss run container_under_test | sed '1d' | tee ${{ steps.test_parameter.outputs.test_result_file }}
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
+        # TODO: temporary until this error is resolved:
+        # https://github.com/busybeaver/homelab-packages/actions/runs/17178559407/job/48738026593#step:12:45
+        # https://github.com/orgs/community/discussions/116610#discussioncomment-8997411
+        # https://github.blog/changelog/2024-04-10-github-hosted-runner-images-deprecation-notice-docker-compose-v1/
+        continue-on-error: true
         env:
           IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
           GOSS_OPTS: --format junit --max-concurrent 1
