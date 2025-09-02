@@ -7,8 +7,8 @@ ARG NPM_CACHE_FOLDER="/usr/src/node-red/npm_cache"
 # https://github.com/node-red/node-red-docker/blob/master/docker-custom/Dockerfile.custom
 # https://repology.org/project/libcap/versions
 # ---
-# renovate: datasource=repology depName=alpine_3_20/libcap versioning=loose
-ARG LIBCAP_VERSION="2.70-r0"
+# renovate: datasource=repology depName=alpine_3_22/libcap versioning=loose
+ARG LIBCAP_VERSION="2.76-r0"
 
 # Allow nodejs to run on privileged ports
 USER root
