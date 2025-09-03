@@ -40,6 +40,8 @@ ARG NODE_RED_SUN_POSITION_VERSION=2.2.0-beta4
 ARG NODE_RED_BLIND_CONTROLLER_VERSION=4.8.6
 # renovate: datasource=npm depName=node-red-node-ping versioning=npm
 ARG NODE_RED_NODE_PING_VERSION=0.3.3
+# renovate: datasource=npm depName=node-red-contrib-tts-ultimate versioning=npm
+ARG NODE_RED_TTS_ULTIMATE_VERSION=3.0.1
 # renovate: datasource=npm depName=node-red-contrib-credentials versioning=npm
 ARG NODE_RED_CREDENTIALS_VERSION=0.2.3
 
@@ -56,6 +58,7 @@ RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CAC
     node-red-contrib-sun-position@${NODE_RED_SUN_POSITION_VERSION} \
     node-red-contrib-blindcontroller@${NODE_RED_BLIND_CONTROLLER_VERSION} \
     node-red-node-ping@${NODE_RED_NODE_PING_VERSION} \
+    node-red-contrib-tts-ultimate@${NODE_RED_TTS_ULTIMATE_VERSION} \
     node-red-contrib-credentials@${NODE_RED_CREDENTIALS_VERSION}
 
 # Update outdated (and potentially vulnerable) dependencies
