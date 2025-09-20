@@ -13,7 +13,7 @@ shopt -u nocasematch
 echo "acme_run.sh script started at $(date)"
 
 # renovate: datasource=docker depName=neilpang/acme.sh versioning=docker
-IMAGE_VERSION=latest@sha256:f352de17e692e4e6cefc77d8249c29861096b0cdb02db4780d0f7b555278f023
+IMAGE_VERSION=latest@sha256:da9486b94da48866ff8128606b2a4abb2b575603190239096bb8d6b6918fa080
 
 docker run \
   --rm \
