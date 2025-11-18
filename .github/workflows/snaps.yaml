@@ -208,7 +208,7 @@ jobs:
 
       - name: yq - Setup
         id: yq_setup
-        uses: mikefarah/yq@6251e95af8df3505def48c71f3119836701495d6 # v4.47.2
+        uses: mikefarah/yq@796317b885ae219215caa36e9bdacc87c9962c15 # v4.48.2
 
       - name: Snapcraft - Get Snap Build Information
         id: snapcraft_build_information
@@ -257,7 +257,7 @@ jobs:
           SERVICE_NAME: ${{ matrix.package }}
 
       - name: Goss - Setup
-        uses: e1himself/goss-installation-action@fbb6fb55d3e59c96045b2500eeb8ce0995d99ac1 # v1.2.1
+        uses: e1himself/goss-installation-action@3b8340a7c772f8064444f48b0df4c2a80d2e50fc # v1.3.0
         with:
           version: ${{ env.GOSS_VERSION }}
 
