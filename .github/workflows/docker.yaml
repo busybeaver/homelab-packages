@@ -45,7 +45,7 @@ jobs:
 
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -101,7 +101,7 @@ jobs:
 
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
       - name: SuperLinter - Lint Dockerfile
         id: superlinter_scan
@@ -140,7 +140,7 @@ jobs:
 
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
       - name: Docker - Set-Up Environment
         id: docker_setup
@@ -198,7 +198,7 @@ jobs:
 
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
@@ -315,7 +315,7 @@ jobs:
 
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
-        uses: EnricoMi/publish-unit-test-result-action@3a74b2957438d0b6e2e61d67b05318aa25c9e6c6 # v2.20.0
+        uses: EnricoMi/publish-unit-test-result-action@34d7c956a59aed1bfebf31df77b8de55db9bbaaf # v2.21.0
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           github_token: ${{ steps.github_generate_app_token.outputs.token }}
@@ -353,7 +353,7 @@ jobs:
 
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
@@ -434,7 +434,7 @@ jobs:
 
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           # required by tj-actions/changed-files
           fetch-depth: 2

@@ -43,7 +43,7 @@ jobs:
 
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -83,7 +83,7 @@ jobs:
 
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
       - name: yq - Setup
         id: yq_setup
