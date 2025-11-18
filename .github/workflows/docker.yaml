@@ -461,7 +461,7 @@ jobs:
 
       - name: Docker - Log into Registry ${{ needs.matrix_setup.outputs.docker_registry }}
         id: docker_login
-        uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
         if: steps.git_changed_files.outputs.any_changed == 'true'
         with:
           registry: ${{ needs.matrix_setup.outputs.docker_registry }}
