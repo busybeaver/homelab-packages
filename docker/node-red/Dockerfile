@@ -23,7 +23,7 @@ ARG NODE_RED_HOMEKIT_BRIDGED_VERSION=1.7.3
 # renovate: datasource=npm depName=node-red-contrib-huemagic versioning=npm
 ARG NODE_RED_HUEMAGIC_VERSION=4.2.2
 # renovate: datasource=npm depName=node-red-node-pushover versioning=npm
-ARG NODE_RED_PUSHOVER_VERSION=0.3.0
+ARG NODE_RED_PUSHOVER_VERSION=0.3.1
 # renovate: datasource=npm depName=node-red-contrib-knx-ultimate versioning=npm
 ARG NODE_RED_KNX_ULTIMATE_VERSION=4.0.29
 # renovate: datasource=npm depName=node-red-contrib-sonos-plus versioning=npm
