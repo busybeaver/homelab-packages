@@ -60,9 +60,9 @@ ARG HOMEBRIDGE_FRITZ_PLATFORM_VERSION=6.0.19
 # renovate: datasource=npm depName=homebridge-weather-plus versioning=npm
 ARG HOMEBRIDGE_WEATHER_PLUS_VERSION=3.4.1
 # renovate: datasource=npm depName=homebridge-homeconnect versioning=npm
-ARG HOMEBRIDGE_HOMECONNECT_VERSION=1.6.6
+ARG HOMEBRIDGE_HOMECONNECT_VERSION=1.7.0
 # renovate: datasource=npm depName=homebridge-dummy versioning=npm
-ARG HOMEBRIDGE_DUMMY_VERSION=1.4.2
+ARG HOMEBRIDGE_DUMMY_VERSION=1.5.5
 # renovate: datasource=npm depName=homebridge-delay-switch versioning=npm
 ARG HOMEBRIDGE_DELAY_SWITCH_VERSION=3.2.5
 # renovate: datasource=npm depName=homebridge-camera-ffmpeg versioning=npm
