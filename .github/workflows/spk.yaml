@@ -1,0 +1,122 @@
+name: 'Synology CI'
+
+on:
+  # run on pushes to main if spk related files were changed
+  push:
+    branches:
+      - main
+      - gh-readonly-queue/main/**
+    paths:
+      - 'spk/**'
+      - '.github/workflows/spk.yaml'
+  # run on pull requests that target the main branch
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'spk/**'
+      - '.github/workflows/spk.yaml'
+  # run weekly on Monday at 12:00
+  schedule:
+    - cron: '0 12 * * 1'
+  # trigger releases manually
+  workflow_dispatch:
+    inputs:
+      publish_release:
+        description: 'Publish release to the GitHub releases'
+        required: true
+        type: choice
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
+
+concurrency:
+  # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
+  # something broke; else, we cancel "old" builds and run/(re)start the build with the latest changes
+  group: ${{ github.ref == 'refs/heads/main' && format('ci-main-{0}-{1}', github.workflow, github.sha) || format('ci-{0}-{1}', github.workflow, github.ref) }}
+
+jobs:
+  matrix_setup:
+    name: 'Setup Build Matrix'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: './spk/'
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846 # tag=v3
+
+      - name: Build Matrix - Setup
+        id: set_matrix
+        run: |
+          echo "::set-output name=matrix::$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
+          echo "::set-output name=spk_arch::['amd64', 'arm', 'arm64']"
+          echo "::set-output name=spk_working_dir::./spk"
+
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+      spk_arch: ${{ steps.set_matrix.outputs.spk_arch }}
+      spk_working_dir: ${{ steps.set_matrix.outputs.spk_working_dir }}
+
+  spk_build:
+    name: 'Build'
+    needs: [matrix_setup]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+        arch: ${{ fromJson(needs.matrix_setup.outputs.spk_arch) }}
+
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846 # tag=v3
+
+      - name: SPK - Build Artifact
+        id: spk_build
+        run: |
+          source ./config.sh
+          echo "Building artifact: ${{ matrix.package }} ${VERSION} / arch ${{ matrix.arch }}"
+
+          echo "Downloading ${{ matrix.package }}:"
+          wget https://releases.hashicorp.com/nomad/${VERSION}/nomad_${VERSION}_linux_${{ matrix.arch }}.zip
+          unzip -o -d ${{ matrix.arch }} nomad_${VERSION}_linux_${{ matrix.arch }}.zip
+          mv ${{ matrix.arch }}/nomad builddir/package/bin/
+
+          echo "Generating INFO file for ${{ matrix.package }}:"
+          sh ./info.sh ${VERSION}-${BUILD_VERSION} > builddir/INFO
+
+          echo "Building SPK for ${{ matrix.package }}:"
+          cd builddir
+          tar -cvzf package.tgz package
+          FILE=${{ matrix.package }}_${VERSION}_${{ matrix.arch }}.spk
+          # tar -cvf ../${FILE} *
+          tar -cvf ../${FILE} INFO conf/ package.tgz scripts/
+          rm package.tgz
+          cd ..
+          echo "::set-output name=spk_package::$(echo ${FILE})"
+        working-directory: ${{ needs.matrix_setup.outputs.spk_working_dir }}/${{ matrix.package }}
+
+      - name: GitHub - Upload SPK Artifact
+        id: github_upload
+        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
+        with:
+          name: ${{ steps.spk_build.outputs.spk_package }}
+          path: ${{ needs.matrix_setup.outputs.spk_working_dir }}/${{ matrix.package }}/${{ steps.spk_build.outputs.spk_package }}
+          retention-days: 7

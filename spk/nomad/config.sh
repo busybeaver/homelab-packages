@@ -1,0 +1,4 @@
+#!/bin/bash
+
+VERSION="1.3.1"
+BUILD_VERSION="0001"
