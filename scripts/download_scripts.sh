@@ -5,7 +5,7 @@ IFS=$'\n\t'
 LC_ALL=C
 
 shopt -s nocasematch
-if [ "${DEBUG_SCRIPT:-}" == "TRUE" ]; then
+if [[ "${DEBUG_SCRIPT:-}" == "TRUE" ]]; then
   set -x
 fi
 shopt -u nocasematch
@@ -21,7 +21,7 @@ rm -rf ./tmp
 git clone --branch main --single-branch --depth 1 --filter=blob:limit=1m "https://github.com/busybeaver/${GIT_REPOSITORY:-homelab-packages}.git" ./tmp
 cd ./tmp || exit 1
 
-if [ "${SKIP_VERIFICATION:-}" != "TRUE" ]; then
+if [[ "${SKIP_VERIFICATION:-}" != "TRUE" ]]; then
   echo "Verify the public sign key: public_key/cosign.pub"
   DOCKER_CONTENT_TRUST=1 docker run \
     --rm \

@@ -75,7 +75,7 @@ RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CAC
     . /opt/homebridge/source.sh && \
     npm_config_cache="${NPM_CACHE_FOLDER}" npm install --save-prod --no-package-lock --save-exact --no-update-notifier \
       "homebridge-fritz-platform@${HOMEBRIDGE_FRITZ_PLATFORM_VERSION}" \
-      "homebridge-weather-plus@${HOMEBRIDGE_WEATHER_VERSION}" \
+      "homebridge-weather-plus@${HOMEBRIDGE_WEATHER_PLUS_VERSION}" \
       "homebridge-homeconnect@${HOMEBRIDGE_HOMECONNECT_VERSION}" \
       "homebridge-dummy@${HOMEBRIDGE_DUMMY_VERSION}" \
       "homebridge-delay-switch@${HOMEBRIDGE_DELAY_SWITCH_VERSION}" \

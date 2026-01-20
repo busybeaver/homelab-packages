@@ -5,7 +5,7 @@ IFS=$'\n\t'
 LC_ALL=C
 
 shopt -s nocasematch
-if [ "${DEBUG_SCRIPT:-}" == "TRUE" ]; then
+if [[ "${DEBUG_SCRIPT:-}" == "TRUE" ]]; then
   set -x
 fi
 shopt -u nocasematch
@@ -27,7 +27,7 @@ rm -rf ./tmp
 git clone --branch main --single-branch --depth 1 --filter=blob:limit=1m "https://github.com/${GIT_REPO_PATH}.git" ./tmp
 cd ./tmp || exit 1
 
-if [ "${SKIP_VERIFICATION:-}" != "TRUE" ]; then
+if [[ "${SKIP_VERIFICATION:-}" != "TRUE" ]]; then
   # extract images from docker-compose.yaml file
   DOCKER_COMPOSE_IMAGES=$(docker run \
     --rm \

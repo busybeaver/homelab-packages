@@ -63,9 +63,3 @@ RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CAC
     node-red-contrib-tts-ultimate@${NODE_RED_TTS_ULTIMATE_VERSION} \
     node-red-contrib-homeconnect@${NODE_RED_HOMECONNECT_VERSION} \
     node-red-contrib-credentials@${NODE_RED_CREDENTIALS_VERSION}
-
-# Update outdated (and potentially vulnerable) dependencies
-USER root
-RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk \
-    apk --update-cache upgrade
-USER node-red
