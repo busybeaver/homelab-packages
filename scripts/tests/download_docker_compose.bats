@@ -14,7 +14,8 @@ if [[ "\$1" == "clone" ]]; then
     TARGET_DIR="\${@: -1}"
     mkdir -p "\$TARGET_DIR/public_key"
     touch "\$TARGET_DIR/docker-compose.yaml"
-    echo "services: { app: { image: 'ghcr.io/busybeaver/homelab-packages/test:latest' } }" > "\$TARGET_DIR/docker-compose.yaml"
+    IMAGE_STR="services: { app: { image: 'ghcr.io/busybeaver/test:latest' } }"
+    echo "\$IMAGE_STR" > "\$TARGET_DIR/docker-compose.yaml"
     touch "\$TARGET_DIR/public_key/cosign.pub"
     touch "\$TARGET_DIR/public_key/cosign.pub.sig"
 fi
@@ -26,7 +27,7 @@ EOF
 #!/usr/bin/env bash
 echo "docker called with \$*" >&2
 if [[ "\$*" == *"mikefarah/yq"* ]]; then
-    echo "ghcr.io/busybeaver/homelab-packages/test:latest"
+    echo "ghcr.io/busybeaver/test:latest"
 fi
 EOF
     chmod +x "$MOCK_BIN/docker"
@@ -55,11 +56,12 @@ teardown() {
     mkdir -p "$CHECKOUT_DIRECTORY"
     touch "$CHECKOUT_DIRECTORY/docker-compose.yaml"
 
-    # We need to make sure we are in a directory that can see scripts/download_docker_compose.sh
-    # or just use the absolute path.
+    # We need to make sure we are in a directory that can see
+    # scripts/download_docker_compose.sh or just use the absolute path.
     run bash scripts/download_docker_compose.sh
     [ "$status" -eq 0 ]
-    [[ "$output" == *"docker-compose called with --file docker-compose.yaml up"* ]]
+    EXPECTED="docker-compose called with --file docker-compose.yaml up"
+    [[ "$output" == *"$EXPECTED"* ]]
     [ -f "$CHECKOUT_DIRECTORY/docker-compose.yaml" ]
 }
 

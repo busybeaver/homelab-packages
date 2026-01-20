@@ -36,7 +36,8 @@ teardown() {
 @test "update_docker_socks.sh updates group correctly" {
     export DOCKER_SOCK="$TEST_TEMP_DIR/docker.sock"
     # Create a fake socket using python
-    python3 -c "import socket; s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM); s.bind('$DOCKER_SOCK')"
+    python3 -c "import socket; s = socket.socket(socket.AF_UNIX, \
+        socket.SOCK_STREAM); s.bind('$DOCKER_SOCK')"
 
     export DOCKER_GROUP="test-group"
     run bash scripts/update_docker_socks.sh

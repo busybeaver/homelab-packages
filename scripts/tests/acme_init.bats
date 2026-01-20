@@ -29,7 +29,8 @@ teardown() {
 
     run bash scripts/acme_init.sh
     [ "$status" -eq 0 ]
-    [[ "$output" == *"--- Initialize certificate renewal setup for Synology 1 ---"* ]]
+    EXPECTED="--- Initialize certificate renewal setup for Synology 1 ---"
+    [[ "$output" == *"$EXPECTED"* ]]
     [[ "$output" == *"docker called with run"* ]]
     [[ "$output" == *"nas1.example.com"* ]]
 }
@@ -44,6 +45,7 @@ teardown() {
 
     run bash scripts/acme_init.sh
     [ "$status" -eq 0 ]
-    [[ "$output" == *"--- Initialize certificate renewal setup for Fritz!Box ---"* ]]
+    EXPECTED="--- Initialize certificate renewal setup for Fritz!Box ---"
+    [[ "$output" == *"$EXPECTED"* ]]
     [[ "$output" == *"--keylength 4096"* ]]
 }

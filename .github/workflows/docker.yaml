@@ -16,9 +16,14 @@ on:
     - cron: '0 12 * * 1'
 
 concurrency:
-  # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
-  # something broke; else, we cancel "old" builds and run/(re)start the build with the latest changes
-  group: ${{ github.ref == 'refs/heads/main' && format('ci-main-{0}-{1}', github.workflow, github.sha) || format('ci-{0}-{1}', github.workflow, github.ref) }}
+  # on main, we want all builds to complete even if commits/merging happens
+  # faster to make it easier to discover at which point something broke;
+  # else, we cancel "old" builds and run/(re)start the build with
+  # the latest changes
+  group: >-
+    ${{ github.ref == 'refs/heads/main' &&
+    format('ci-main-{0}-{1}', github.workflow, github.sha) ||
+    format('ci-{0}-{1}', github.workflow, github.ref) }}
 
 jobs:
   matrix_setup:
@@ -48,7 +53,7 @@ jobs:
 
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5.0.1
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -149,13 +154,16 @@ jobs:
         id: docker_setup
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
-      - name: Docker - Build Artifact # but don't publish yet
+      - name: Docker - Build Artifact  # but don't publish yet
         id: docker_build
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83  # v6.18.0
         with:
           context: ${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}
           push: false
-          tags: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }},${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }},${{ format(needs.matrix_setup.outputs.image_name_date, matrix.package) }}
+          tags: >-
+            ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }},
+            ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }},
+            ${{ format(needs.matrix_setup.outputs.image_name_date, matrix.package) }}
           # platforms: ${{ steps.docker_setup.outputs.platforms }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -213,14 +221,15 @@ jobs:
       - name: GitHub - Get Test Parameter
         id: test_parameter
         run: |
-          TEST_WORKING_DIR="${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/tests"
+          DOCKER_DIR="${{ needs.matrix_setup.outputs.docker_working_dir }}"
+          TEST_WORKING_DIR="${DOCKER_DIR}/${{ matrix.package }}/tests"
           {
             echo "test_working_dir=${TEST_WORKING_DIR}"
             echo "test_result_file=goss_test_results.xml"
             echo "structure_test_result_file=structure_test_results.xml"
             echo "container_logs_name=container_logs_{0}.log"
           } >> "$GITHUB_OUTPUT"
-          mkdir -p ${TEST_WORKING_DIR}
+          mkdir -p "${TEST_WORKING_DIR}"
 
       - name: Docker - Load Image
         id: docker_load
@@ -397,14 +406,16 @@ jobs:
 
       - name: Snyk - Check for Docker Image Vulnerabilities
         id: snyk_scan
-        uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04 # v1.0.0
+        uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04  # v1.0.0
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
           # only report issues medium or higher (aka no low risk issues)
-          args: --file=${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile --severity-threshold=medium
+          args: >-
+            --file=${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile
+            --severity-threshold=medium
           sarif: true
 
       # Replace any "null" and "undefined" security severity values with 0. The null/undefined value is

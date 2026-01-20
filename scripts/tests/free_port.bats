@@ -64,7 +64,10 @@ teardown() {
 }
 
 @test "free_port.sh updates ports correctly when run as root" {
-    run env MOCK_EUID=0 NGINX_MUSTACHE_DIR="$NGINX_MUSTACHE_DIR" BACKUP_DIR="$BACKUP_DIR" bash scripts/free_port.sh
+    run env MOCK_EUID=0 \
+        NGINX_MUSTACHE_DIR="$NGINX_MUSTACHE_DIR" \
+        BACKUP_DIR="$BACKUP_DIR" \
+        bash scripts/free_port.sh
     [ "$status" -eq 0 ]
 
     grep "listen 81;" "$NGINX_MUSTACHE_DIR/test1.mustache"
@@ -75,7 +78,11 @@ teardown() {
 }
 
 @test "free_port.sh updates to custom ports correctly" {
-    run env MOCK_EUID=0 HTTP_PORT=8080 HTTPS_PORT=8443 NGINX_MUSTACHE_DIR="$NGINX_MUSTACHE_DIR" BACKUP_DIR="$BACKUP_DIR" bash scripts/free_port.sh
+    run env MOCK_EUID=0 \
+        HTTP_PORT=8080 HTTPS_PORT=8443 \
+        NGINX_MUSTACHE_DIR="$NGINX_MUSTACHE_DIR" \
+        BACKUP_DIR="$BACKUP_DIR" \
+        bash scripts/free_port.sh
     [ "$status" -eq 0 ]
 
     grep "listen 8080;" "$NGINX_MUSTACHE_DIR/test1.mustache"
@@ -84,7 +91,10 @@ teardown() {
 
 @test "free_port.sh uses synosystemctl if synoservicecfg is missing" {
     rm "$MOCK_BIN/synoservicecfg"
-    run env MOCK_EUID=0 NGINX_MUSTACHE_DIR="$NGINX_MUSTACHE_DIR" BACKUP_DIR="$BACKUP_DIR" bash scripts/free_port.sh
+    run env MOCK_EUID=0 \
+        NGINX_MUSTACHE_DIR="$NGINX_MUSTACHE_DIR" \
+        BACKUP_DIR="$BACKUP_DIR" \
+        bash scripts/free_port.sh
     [ "$status" -eq 0 ]
     [[ "$output" == *"synosystemctl called with restart nginx"* ]]
 }
