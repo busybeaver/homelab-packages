@@ -5,7 +5,7 @@ IFS=$'\n\t'
 LC_ALL=C
 
 shopt -s nocasematch
-if [ "${DEBUG_SCRIPT:-}" == "TRUE" ]; then
+if [[ "${DEBUG_SCRIPT:-}" == "TRUE" ]]; then
   set -x
 fi
 shopt -u nocasematch
