@@ -8,7 +8,8 @@ commandTests:
   - name: "node-red version"
     command: "node"
     args: ["node_modules/node-red/red.js", "--version"]
-    expectedOutput: ["4.1.2"]  # renovate: datasource=docker depName=nodered/node-red
+    # renovate: datasource=docker depName=nodered/node-red
+    expectedOutput: ["4.1.2"]
 
 fileExistenceTests:
   - name: "node-red package.json"

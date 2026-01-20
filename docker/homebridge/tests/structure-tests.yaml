@@ -8,7 +8,8 @@ commandTests:
   - name: "homebridge version"
     command: "/opt/homebridge/bin/homebridge"
     args: ["--version"]
-    expectedOutput: ["1.7.7"]  # renovate: datasource=github-tags depName=homebridge/homebridge-apt-pkg
+    # renovate: datasource=github-tags depName=homebridge/homebridge-apt-pkg
+    expectedOutput: ["1.7.7"]
 
 fileExistenceTests:
   - name: "homebridge start script"

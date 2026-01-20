@@ -7,7 +7,8 @@ commandTests:
   - name: "hass version"
     command: "hass"
     args: ["--version"]
-    expectedOutput: ["2025.12"]  # renovate: datasource=docker depName=homeassistant/home-assistant
+    # renovate: datasource=docker depName=homeassistant/home-assistant
+    expectedOutput: ["2025.12"]
 
 fileExistenceTests:
   - name: "home-assistant service run script"
