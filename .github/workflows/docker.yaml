@@ -1,3 +1,4 @@
+---
 name: 'Docker CI'
 
 on:
@@ -250,16 +251,18 @@ jobs:
 
       - name: GitHub - Check for Structure Test File Existence
         id: check_structure_test_file
-        uses: andstor/file-existence-action@076e0072799f4942c8bc574a82233e1e4d13e9d6 # v3.0.0
+        uses: andstor/file-existence-action@076e0072799f4942c8bc574a82233e1e4d13e9d6
         with:
-          files: ${{ steps.test_parameter.outputs.test_working_dir }}/structure-tests.yaml
+          files: |
+            ${{ steps.test_parameter.outputs.test_working_dir }}/structure-tests.yaml
 
       - name: Container Structure Test - Test Docker Image
         id: structure_test
         if: steps.check_structure_test_file.outputs.files_exists == 'true'
-        uses: GoogleContainerTools/container-structure-test-action@5998394474776104e76d3388701e828a2a075a36 # v0.3.0
+        uses: GoogleContainerTools/container-structure-test-action@5998394474776104e76d3388701e828a2a075a36
         with:
-          image: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
+          image: >-
+            ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
           config: ${{ steps.test_parameter.outputs.test_working_dir }}/structure-tests.yaml
 
       - name: Goss - Test Docker Image

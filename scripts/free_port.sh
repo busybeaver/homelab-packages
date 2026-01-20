@@ -36,7 +36,8 @@ BACKUP_DIR="${BACKUP_DIR:-/volume1/apps/free_ports/backup}"
 DELETE_OLD_BACKUPS="${DELETE_OLD_BACKUPS:-false}" # change to true to automatically delete old backups.
 KEEP_BACKUP_DAYS="${KEEP_BACKUP_DAYS:-30}"
 
-if [[ $EUID -ne 0 ]]; then
+EFFECTIVE_USER_ID="$(id -u)"
+if [[ "${EFFECTIVE_USER_ID}" -ne 0 ]]; then
    echo "This script must be run as root"
    exit 1
 fi

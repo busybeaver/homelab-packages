@@ -28,6 +28,17 @@ EOF
     mkdir -p "$MOCK_BIN"
     export PATH="$MOCK_BIN:$PATH"
 
+    # Mock id to return root by default if requested
+    cat <<EOF > "$MOCK_BIN/id"
+#!/usr/bin/env bash
+if [[ "\$*" == "-u" ]]; then
+  echo "\${MOCK_EUID:-1001}"
+else
+  /usr/bin/id "\$@"
+fi
+EOF
+    chmod +x "$MOCK_BIN/id"
+
     # Mock synoservicecfg and synosystemctl
     cat <<EOF > "$MOCK_BIN/synoservicecfg"
 #!/usr/bin/env bash
@@ -47,14 +58,13 @@ teardown() {
 }
 
 @test "free_port.sh fails if not root" {
-    run bash scripts/free_port.sh
+    run env MOCK_EUID=1001 bash scripts/free_port.sh
     [ "$status" -eq 1 ]
     [[ "$output" == *"This script must be run as root"* ]]
 }
 
 @test "free_port.sh updates ports correctly when run as root" {
-    # We use env EUID=0 to trick the script's check
-    run env EUID=0 NGINX_MUSTACHE_DIR="$NGINX_MUSTACHE_DIR" BACKUP_DIR="$BACKUP_DIR" bash scripts/free_port.sh
+    run env MOCK_EUID=0 NGINX_MUSTACHE_DIR="$NGINX_MUSTACHE_DIR" BACKUP_DIR="$BACKUP_DIR" bash scripts/free_port.sh
     [ "$status" -eq 0 ]
 
     grep "listen 81;" "$NGINX_MUSTACHE_DIR/test1.mustache"
@@ -65,7 +75,7 @@ teardown() {
 }
 
 @test "free_port.sh updates to custom ports correctly" {
-    run env EUID=0 HTTP_PORT=8080 HTTPS_PORT=8443 NGINX_MUSTACHE_DIR="$NGINX_MUSTACHE_DIR" BACKUP_DIR="$BACKUP_DIR" bash scripts/free_port.sh
+    run env MOCK_EUID=0 HTTP_PORT=8080 HTTPS_PORT=8443 NGINX_MUSTACHE_DIR="$NGINX_MUSTACHE_DIR" BACKUP_DIR="$BACKUP_DIR" bash scripts/free_port.sh
     [ "$status" -eq 0 ]
 
     grep "listen 8080;" "$NGINX_MUSTACHE_DIR/test1.mustache"
@@ -74,7 +84,7 @@ teardown() {
 
 @test "free_port.sh uses synosystemctl if synoservicecfg is missing" {
     rm "$MOCK_BIN/synoservicecfg"
-    run env EUID=0 NGINX_MUSTACHE_DIR="$NGINX_MUSTACHE_DIR" BACKUP_DIR="$BACKUP_DIR" bash scripts/free_port.sh
+    run env MOCK_EUID=0 NGINX_MUSTACHE_DIR="$NGINX_MUSTACHE_DIR" BACKUP_DIR="$BACKUP_DIR" bash scripts/free_port.sh
     [ "$status" -eq 0 ]
     [[ "$output" == *"synosystemctl called with restart nginx"* ]]
 }
