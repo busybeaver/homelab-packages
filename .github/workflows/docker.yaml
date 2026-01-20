@@ -1,3 +1,4 @@
+---
 name: 'Docker CI'
 
 on:
@@ -15,9 +16,14 @@ on:
     - cron: '0 12 * * 1'
 
 concurrency:
-  # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
-  # something broke; else, we cancel "old" builds and run/(re)start the build with the latest changes
-  group: ${{ github.ref == 'refs/heads/main' && format('ci-main-{0}-{1}', github.workflow, github.sha) || format('ci-{0}-{1}', github.workflow, github.ref) }}
+  # on main, we want all builds to complete even if commits/merging happens
+  # faster to make it easier to discover at which point something broke;
+  # else, we cancel "old" builds and run/(re)start the build with
+  # the latest changes
+  group: >-
+    ${{ github.ref == 'refs/heads/main' &&
+    format('ci-main-{0}-{1}', github.workflow, github.sha) ||
+    format('ci-{0}-{1}', github.workflow, github.ref) }}
 
 jobs:
   matrix_setup:
@@ -31,6 +37,8 @@ jobs:
 
     permissions:
       contents: read
+      checks: write
+      pull-requests: write
 
     env:
       REGISTRY: ghcr.io # GitHub Registry
@@ -45,7 +53,7 @@ jobs:
 
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5.0.1
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -146,13 +154,16 @@ jobs:
         id: docker_setup
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
-      - name: Docker - Build Artifact # but don't publish yet
+      - name: Docker - Build Artifact  # but don't publish yet
         id: docker_build
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83  # v6.18.0
         with:
           context: ${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}
           push: false
-          tags: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }},${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }},${{ format(needs.matrix_setup.outputs.image_name_date, matrix.package) }}
+          tags: >-
+            ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }},
+            ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }},
+            ${{ format(needs.matrix_setup.outputs.image_name_date, matrix.package) }}
           # platforms: ${{ steps.docker_setup.outputs.platforms }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -210,13 +221,15 @@ jobs:
       - name: GitHub - Get Test Parameter
         id: test_parameter
         run: |
-          TEST_WORKING_DIR="${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/tests"
+          DOCKER_DIR="${{ needs.matrix_setup.outputs.docker_working_dir }}"
+          TEST_WORKING_DIR="${DOCKER_DIR}/${{ matrix.package }}/tests"
           {
             echo "test_working_dir=${TEST_WORKING_DIR}"
             echo "test_result_file=goss_test_results.xml"
+            echo "structure_test_result_file=structure_test_results.xml"
             echo "container_logs_name=container_logs_{0}.log"
           } >> "$GITHUB_OUTPUT"
-          mkdir -p ${TEST_WORKING_DIR}
+          mkdir -p "${TEST_WORKING_DIR}"
 
       - name: Docker - Load Image
         id: docker_load
@@ -248,6 +261,31 @@ jobs:
         with:
           files: ${{ steps.test_parameter.outputs.test_working_dir }}/goss.yaml
 
+      - name: GitHub - Check for Structure Test File Existence
+        id: check_structure_test_file
+        uses: andstor/file-existence-action@076e0072799f4942c8bc574a82233e1e4d13e9d6
+        with:
+          files: |
+            ${{ steps.test_parameter.outputs.test_working_dir }}/structure-tests.yaml
+
+      - name: Container Structure Test - Install
+        if: steps.check_structure_test_file.outputs.files_exists == 'true'
+        run: |
+          curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64
+          chmod +x container-structure-test-linux-amd64
+          sudo mv container-structure-test-linux-amd64 /usr/local/bin/container-structure-test
+
+      - name: Container Structure Test - Test Docker Image
+        id: structure_test
+        if: steps.check_structure_test_file.outputs.files_exists == 'true'
+        run: |
+          container-structure-test test \
+            --image ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }} \
+            --config ${{ steps.test_parameter.outputs.test_working_dir }}/structure-tests.yaml \
+            --output junit \
+            --test-report ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.structure_test_result_file }}
+        continue-on-error: true
+
       - name: Goss - Test Docker Image
         id: goss_test
         if: steps.check_test_file.outputs.files_exists == 'true'
@@ -264,7 +302,7 @@ jobs:
         env:
           IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
           GOSS_OPTS: --format junit --max-concurrent 1
-          GOSS_SLEEP: 30s
+          GOSS_SLEEP: 90s
 
       - name: Docker - Post Test Teardown
         id: docker_teardown
@@ -307,7 +345,7 @@ jobs:
       - name: GitHub - Generate App Token
         id: github_generate_app_token
         uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
-        if: always() && steps.check_test_file.outputs.files_exists == 'true'
+        if: always() && (steps.check_test_file.outputs.files_exists == 'true' || steps.check_structure_test_file.outputs.files_exists == 'true')
         with:
           # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
           app_id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
@@ -316,11 +354,11 @@ jobs:
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
         uses: EnricoMi/publish-unit-test-result-action@27d65e188ec43221b20d26de30f4892fad91df2f # v2.22.0
-        if: always() && steps.check_test_file.outputs.files_exists == 'true'
+        if: always() && (steps.check_test_file.outputs.files_exists == 'true' || steps.check_structure_test_file.outputs.files_exists == 'true')
         with:
           github_token: ${{ steps.github_generate_app_token.outputs.token }}
           check_name: Test Results (Docker - ${{ matrix.package }})
-          junit_files: ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
+          junit_files: ${{ steps.test_parameter.outputs.test_working_dir }}/*.xml
           # we only add github checks to the PR/commit, but don't create PR comments; reason is that comments will not
           # be replaced but always newly added due to (it looks for "github-actions" user instead of the github app user):
           # https://github.com/EnricoMi/publish-unit-test-result-action/blob/ae7c14a87cf1a1200805b487debc65963bdb3f2d/python/publish/publisher.py#L493
@@ -368,14 +406,16 @@ jobs:
 
       - name: Snyk - Check for Docker Image Vulnerabilities
         id: snyk_scan
-        uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04 # v1.0.0
+        uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04  # v1.0.0
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
           # only report issues medium or higher (aka no low risk issues)
-          args: --file=${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile --severity-threshold=medium
+          args: >-
+            --file=${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile
+            --severity-threshold=medium
           sarif: true
 
       # Replace any "null" and "undefined" security severity values with 0. The null/undefined value is

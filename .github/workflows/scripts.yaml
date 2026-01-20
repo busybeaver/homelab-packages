@@ -1,6 +1,7 @@
+---
 name: 'Scripts CI'
 
-on:
+"on":
   # run on pushes to main
   push:
     branches:
@@ -10,13 +11,73 @@ on:
       - '.github/workflows/scripts.yaml'
 
 concurrency:
-  # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
-  # something broke; else, we cancel "old" builds and run/(re)start the build with the latest changes
-  group: ${{ github.ref == 'refs/heads/main' && format('ci-main-{0}-{1}', github.workflow, github.sha) || format('ci-{0}-{1}', github.workflow, github.ref) }}
+  # on main, we want all builds to complete even if commits/merging happens
+  # faster to make it easier to discover at which point something broke;
+  # else, we cancel "old" builds and run/(re)start the build with
+  # the latest changes
+  group: >-
+    ${{ github.ref == 'refs/heads/main' &&
+    format('ci-main-{0}-{1}', github.workflow, github.sha) ||
+    format('ci-{0}-{1}', github.workflow, github.ref) }}
 
 jobs:
+  test:
+    name: 'Test'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
+    steps:
+      - name: StepSecurity - Harden Github-hosted Runners
+        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2
+        with:
+          egress-policy: audit
+          disable-telemetry: true
+          disable-sudo: true
+
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
+
+      - name: Bats - Setup
+        id: bats_setup
+        uses: bats-core/bats-action@v3.0.0
+
+      - name: Bats - Test Scripts
+        id: bats_test
+        run: |
+          mkdir -p test-results
+          bats --formatter junit scripts/tests/*.bats \
+            | tee test-results/bats_results.xml
+
+      - name: GitHub - Generate App Token
+        id: github_generate_app_token
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a
+        if: always()
+        with:
+          app_id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
+          private_key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
+
+      - name: GitHub - Publish Unit Test Results
+        id: github_publish_results
+        uses: EnricoMi/publish-unit-test-result-action@27d65e188ec43221b20d26de30f4892fad91df2f
+        if: always()
+        with:
+          github_token: ${{ steps.github_generate_app_token.outputs.token }}
+          check_name: Test Results (Scripts)
+          junit_files: test-results/bats_results.xml
+          comment_mode: off
+
   checksums_signature:
     name: 'Create Checksums and Signature'
+    needs: [test]
     runs-on: ubuntu-latest
 
     defaults:
@@ -28,13 +89,12 @@ jobs:
       contents: read
 
     env:
-      # renovate: datasource=github-releases depName=sigstore/cosign
       COSIGN_VERSION: v2.6.1
       CHECKSUM_FILE: scripts.sha256
 
     steps:
       - name: StepSecurity - Harden Github-hosted Runners
-        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
+        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2
         with:
           egress-policy: audit
           disable-telemetry: true
@@ -42,17 +102,14 @@ jobs:
 
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
         with:
-          # https://github.com/marketplace/actions/git-auto-commit#checkout-the-correct-branch
           ref: ${{ github.head_ref }}
-          # this is the token that the "git-auto-commit" action is using, so we use the one from the app
-          # https://github.com/marketplace/actions/git-auto-commit#commits-made-by-this-action-do-not-trigger-new-workflow-runs
           ssh-key: ${{ secrets.SSH_KEY }}
 
       - name: Cosign - Setup
         id: cosign_setup
-        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad
         with:
           cosign-release: ${{ env.COSIGN_VERSION }}
 
@@ -68,7 +125,8 @@ jobs:
             rm "${CHECKSUM_FILE}.sig"
           fi
 
-          find "." -type f \( -name "*.sh" \) -exec sha256sum {} \; | LC_ALL=C sort -d | tee scripts.sha256
+          find "." -type f \( -name "*.sh" \) -exec sha256sum {} \; \
+            | LC_ALL=C sort -d | tee scripts.sha256
 
       - name: Cosign - Create Signature File
         id: cosign_sign
@@ -88,7 +146,7 @@ jobs:
 
       - name: GitHub - Setup GPG Keys
         id: github_setup_gpg
-        uses: crazy-max/ghaction-import-gpg@e89d40939c28e39f97cf32126055eeae86ba74ec # v6.3.0
+        uses: crazy-max/ghaction-import-gpg@e89d40939c28e39f97cf32126055eeae86ba74ec
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
@@ -97,12 +155,13 @@ jobs:
 
       - name: Git - Commit and Push State Changes
         id: git_commit_push
-        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7.1.0
+        uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9
         with:
           commit_message: "chore: update checksum and signature file [skip ci]"
           commit_options: '--no-verify'
           commit_user_name: ${{ steps.github_setup_gpg.outputs.name }}
           commit_user_email: ${{ steps.github_setup_gpg.outputs.email }}
-          commit_author: repository-assistant[bot] <${{ secrets.REPOSITORY_ASSISTANT_APP_ID }}+repository-assistant[bot]@users.noreply.github.com>
+          commit_author: >-
+            repository-assistant[bot]
+            <${{ secrets.REPOSITORY_ASSISTANT_APP_ID }}+repository-assistant[bot]@users.noreply.github.com>
           file_pattern: 'scripts/*.sha256 scripts/*.sha256.sig'
-          # push_options: '--force'

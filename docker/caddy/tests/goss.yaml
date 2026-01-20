@@ -1,5 +1,24 @@
+---
 command:
+  caddy version:
+    exit-status: 0
+    stdout:
+      # renovate: datasource=docker depName=caddy
+      - "v2.10.2"
+  caddy list-modules:
+    exit-status: 0
+    stdout:
+      - "dns.providers.cloudflare"
+      - "http.encoders.transform"
+      - "http.handlers.request_id"
+process:
+  caddy:
+    running: true
 port:
+  tcp:80:
+    listening: true
+  tcp:443:
+    listening: true
 http:
   http://localhost:80/:
     method: GET

@@ -1,0 +1,27 @@
+---
+schemaVersion: "2.0.0"
+metadataTest:
+  workdir: "/app"
+  user: "node"
+  exposedPorts: ["3001"]
+
+commandTests:
+  - name: "node version"
+    command: "node"
+    args: ["--version"]
+    expectedOutput: ["v"]
+  - name: "uptime-kuma version"
+    command: "node"
+    args: ["server/server.js", "--version"]
+    # renovate: datasource=docker depName=louislam/uptime-kuma
+    expectedOutput: ["2.0.0-beta"]
+
+fileExistenceTests:
+  - name: "custom entrypoint"
+    path: "/app/extra/entrypoint.sh"
+    shouldExist: true
+
+fileContentTests:
+  - name: "custom entrypoint content"
+    path: "/app/extra/entrypoint.sh"
+    expectedContents: ["node", "server/server.js"]

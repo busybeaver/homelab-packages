@@ -1,0 +1,20 @@
+---
+command:
+  node --version:
+    exit-status: 0
+    stdout:
+      - "v"
+  node server/server.js --version:
+    exit-status: 0
+    stdout:
+      # renovate: datasource=docker depName=louislam/uptime-kuma
+      - "2.0.0-beta"
+port:
+  tcp:3001:
+    listening: true
+http:
+  http://localhost:3001/:
+    status: 200
+process:
+  node:
+    running: true

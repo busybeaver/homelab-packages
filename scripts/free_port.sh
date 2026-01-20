@@ -36,12 +36,13 @@ BACKUP_DIR="${BACKUP_DIR:-/volume1/apps/free_ports/backup}"
 DELETE_OLD_BACKUPS="${DELETE_OLD_BACKUPS:-false}" # change to true to automatically delete old backups.
 KEEP_BACKUP_DAYS="${KEEP_BACKUP_DAYS:-30}"
 
-if [[ $EUID -ne 0 ]]; then
+EFFECTIVE_USER_ID="$(id -u)"
+if [[ "${EFFECTIVE_USER_ID}" -ne 0 ]]; then
    echo "This script must be run as root"
    exit 1
 fi
 
-NGINX_MUSTACHE_DIR="/usr/syno/share/nginx"
+NGINX_MUSTACHE_DIR="${NGINX_MUSTACHE_DIR:-/usr/syno/share/nginx}"
 if [[ ! -d "${NGINX_MUSTACHE_DIR}" ]]; then
     echo "Error: ${NGINX_MUSTACHE_DIR} does not exist. This script is intended for Synology DSM."
     exit 1
@@ -73,6 +74,8 @@ fi
 
 echo "Made these changes:"
 
-diff /usr/syno/share/nginx/ "$CURRENT_BACKUP_DIR" 2>&1 | tee "$CURRENT_BACKUP_DIR/changes.log"
+# diff returns 1 if differences are found, which is expected here.
+# we use "|| true" to prevent the script from exiting due to "set -e" and "pipefail".
+diff "${NGINX_MUSTACHE_DIR}/" "$CURRENT_BACKUP_DIR" 2>&1 | tee "$CURRENT_BACKUP_DIR/changes.log" || true
 
 echo "free_port.sh script finished successfully at $(date)"

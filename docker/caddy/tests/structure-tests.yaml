@@ -1,0 +1,31 @@
+---
+schemaVersion: "2.0.0"
+metadataTest:
+  entrypoint: ["/usr/bin/caddy"]
+  cmd: ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+  workdir: "/srv"
+  exposedPorts: ["80", "443", "443/udp", "2019"]
+
+commandTests:
+  - name: "caddy version"
+    command: "caddy"
+    args: ["version"]
+    # renovate: datasource=docker depName=caddy
+    expectedOutput: ["v2.10.2"]
+  - name: "caddy modules"
+    command: "caddy"
+    args: ["list-modules"]
+    expectedOutput:
+      - "dns.providers.cloudflare"
+      - "http.encoders.transform"
+      - "http.handlers.request_id"
+
+fileExistenceTests:
+  - name: "caddy binary"
+    path: "/usr/bin/caddy"
+    shouldExist: true
+
+fileContentTests:
+  - name: "alpine version"
+    path: "/etc/alpine-release"
+    expectedContents: ["3"]

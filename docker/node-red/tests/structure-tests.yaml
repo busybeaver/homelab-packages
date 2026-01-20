@@ -1,0 +1,22 @@
+---
+schemaVersion: "2.0.0"
+metadataTest:
+  workdir: "/usr/src/node-red"
+  user: "node-red"
+
+commandTests:
+  - name: "node-red version"
+    command: "node"
+    args: ["node_modules/node-red/red.js", "--version"]
+    # renovate: datasource=docker depName=nodered/node-red
+    expectedOutput: ["4.1.2"]
+
+fileExistenceTests:
+  - name: "node-red package.json"
+    path: "/usr/src/node-red/package.json"
+    shouldExist: true
+
+fileContentTests:
+  - name: "node-red package.json content"
+    path: "/usr/src/node-red/package.json"
+    expectedContents: ["node-red"]

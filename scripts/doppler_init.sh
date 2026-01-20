@@ -33,6 +33,7 @@ if ! "${DOPPLER_TEMP_INSTALL_DIRECTORY}/doppler" --version; then
     exit 1
 fi
 
-sudo mv "${DOPPLER_TEMP_INSTALL_DIRECTORY}/doppler" /usr/local/bin/doppler
+DOPPLER_INSTALL_PATH="${DOPPLER_INSTALL_PATH:-/usr/local/bin/doppler}"
+sudo mv "${DOPPLER_TEMP_INSTALL_DIRECTORY}/doppler" "${DOPPLER_INSTALL_PATH}"
 
 echo "doppler_init.sh script finished successfully at $(date)"
