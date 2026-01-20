@@ -24,6 +24,11 @@ jobs:
       run:
         shell: bash
 
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
     steps:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2
@@ -42,7 +47,27 @@ jobs:
 
       - name: Bats - Test Scripts
         id: bats_test
-        run: bats scripts/tests/*.bats
+        run: |
+          mkdir -p test-results
+          bats --formatter junit scripts/tests/*.bats | tee test-results/bats_results.xml
+
+      - name: GitHub - Generate App Token
+        id: github_generate_app_token
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
+        if: always()
+        with:
+          app_id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
+          private_key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
+
+      - name: GitHub - Publish Unit Test Results
+        id: github_publish_results
+        uses: EnricoMi/publish-unit-test-result-action@27d65e188ec43221b20d26de30f4892fad91df2f # v2.22.0
+        if: always()
+        with:
+          github_token: ${{ steps.github_generate_app_token.outputs.token }}
+          check_name: Test Results (Scripts)
+          junit_files: test-results/bats_results.xml
+          comment_mode: off
 
   checksums_signature:
     name: 'Create Checksums and Signature'

@@ -10,7 +10,7 @@ commandTests:
   - name: "caddy version"
     command: "caddy"
     args: ["version"]
-    expectedOutput: ["v2.10.2"]
+    expectedOutput: ["v2.10.2"]  # renovate: datasource=docker depName=caddy
   - name: "caddy modules"
     command: "caddy"
     args: ["list-modules"]

@@ -32,6 +32,8 @@ jobs:
 
     permissions:
       contents: read
+      checks: write
+      pull-requests: write
 
     env:
       REGISTRY: ghcr.io # GitHub Registry
@@ -215,6 +217,7 @@ jobs:
           {
             echo "test_working_dir=${TEST_WORKING_DIR}"
             echo "test_result_file=goss_test_results.xml"
+            echo "structure_test_result_file=structure_test_results.xml"
             echo "container_logs_name=container_logs_{0}.log"
           } >> "$GITHUB_OUTPUT"
           mkdir -p ${TEST_WORKING_DIR}
@@ -256,14 +259,22 @@ jobs:
           files: |
             ${{ steps.test_parameter.outputs.test_working_dir }}/structure-tests.yaml
 
+      - name: Container Structure Test - Install
+        if: steps.check_structure_test_file.outputs.files_exists == 'true'
+        run: |
+          curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64
+          chmod +x container-structure-test-linux-amd64
+          sudo mv container-structure-test-linux-amd64 /usr/local/bin/container-structure-test
+
       - name: Container Structure Test - Test Docker Image
         id: structure_test
         if: steps.check_structure_test_file.outputs.files_exists == 'true'
-        uses: GoogleContainerTools/container-structure-test-action@5998394474776104e76d3388701e828a2a075a36
-        with:
-          image: >-
-            ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
-          config: ${{ steps.test_parameter.outputs.test_working_dir }}/structure-tests.yaml
+        run: |
+          container-structure-test test \
+            --image ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }} \
+            --config ${{ steps.test_parameter.outputs.test_working_dir }}/structure-tests.yaml \
+            --output junit \
+            --test-report ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.structure_test_result_file }}
 
       - name: Goss - Test Docker Image
         id: goss_test
@@ -333,11 +344,11 @@ jobs:
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
         uses: EnricoMi/publish-unit-test-result-action@27d65e188ec43221b20d26de30f4892fad91df2f # v2.22.0
-        if: always() && steps.check_test_file.outputs.files_exists == 'true'
+        if: always() && (steps.check_test_file.outputs.files_exists == 'true' || steps.check_structure_test_file.outputs.files_exists == 'true')
         with:
           github_token: ${{ steps.github_generate_app_token.outputs.token }}
           check_name: Test Results (Docker - ${{ matrix.package }})
-          junit_files: ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
+          junit_files: ${{ steps.test_parameter.outputs.test_working_dir }}/*.xml
           # we only add github checks to the PR/commit, but don't create PR comments; reason is that comments will not
           # be replaced but always newly added due to (it looks for "github-actions" user instead of the github app user):
           # https://github.com/EnricoMi/publish-unit-test-result-action/blob/ae7c14a87cf1a1200805b487debc65963bdb3f2d/python/publish/publisher.py#L493
