@@ -23,7 +23,8 @@ export ACME_HOME="${HOMELAB_PACKAGES_CONFIG}/acme.sh"
 export GLOBAL_ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/cf.env"
 
 # synology nas
-if [[ "${INIT_SYNOLOGY^^}" == "TRUE" ]]; then
+INIT_SYNOLOGY_VAL="${INIT_SYNOLOGY:-}"
+if [[ "${INIT_SYNOLOGY_VAL^^}" == "TRUE" ]]; then
   echo "--- Initialize certificate renewal setup for Synology 1 ---"
   export CERT_DOMAIN_1="nas1.${ROOT_DOMAIN}"
   export CERT_DOMAIN_2="synology1.${ROOT_DOMAIN}"
@@ -35,7 +36,8 @@ if [[ "${INIT_SYNOLOGY^^}" == "TRUE" ]]; then
 fi
 
 # fritz!box
-if [[ "${INIT_FRITZ_BOX^^}" == "TRUE" ]]; then
+INIT_FRITZ_BOX_VAL="${INIT_FRITZ_BOX:-}"
+if [[ "${INIT_FRITZ_BOX_VAL^^}" == "TRUE" ]]; then
   echo "--- Initialize certificate renewal setup for Fritz!Box ---"
   export CERT_DOMAIN_1="fritz-box.${ROOT_DOMAIN}"
   export CERT_DOMAIN_2="router.${ROOT_DOMAIN}"
@@ -48,7 +50,8 @@ if [[ "${INIT_FRITZ_BOX^^}" == "TRUE" ]]; then
 fi
 
 # adguard
-if [[ "${INIT_ADGUARD^^}" == "TRUE" ]]; then
+INIT_ADGUARD_VAL="${INIT_ADGUARD:-}"
+if [[ "${INIT_ADGUARD_VAL^^}" == "TRUE" ]]; then
   echo "--- Initialize certificate renewal setup for Adguard 1 ---"
   export CERT_DOMAIN_1="adguard1.${ROOT_DOMAIN}"
   export CERT_DOMAIN_2="dns1.${ROOT_DOMAIN}"
@@ -60,7 +63,8 @@ if [[ "${INIT_ADGUARD^^}" == "TRUE" ]]; then
 fi
 
 # uptime-kuma
-if [[ "${INIT_UPTIME_KUMA^^}" == "TRUE" ]]; then
+INIT_UPTIME_KUMA_VAL="${INIT_UPTIME_KUMA:-}"
+if [[ "${INIT_UPTIME_KUMA_VAL^^}" == "TRUE" ]]; then
   echo "--- Initialize certificate renewal setup for Uptime Kuma ---"
   export CERT_DOMAIN_1="uptime.${ROOT_DOMAIN}"
   export CERT_DOMAIN_2="status.${ROOT_DOMAIN}"
@@ -73,7 +77,8 @@ if [[ "${INIT_UPTIME_KUMA^^}" == "TRUE" ]]; then
 fi
 
 # homebridge
-if [[ "${INIT_HOMEBRIDGE^^}" == "TRUE" ]]; then
+INIT_HOMEBRIDGE_VAL="${INIT_HOMEBRIDGE:-}"
+if [[ "${INIT_HOMEBRIDGE_VAL^^}" == "TRUE" ]]; then
   echo "--- Initialize certificate renewal setup for Homebridge ---"
   export CERT_DOMAIN="homebridge.${ROOT_DOMAIN}"
   export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/homebridge.env"
@@ -83,7 +88,8 @@ if [[ "${INIT_HOMEBRIDGE^^}" == "TRUE" ]]; then
 fi
 
 # n8n
-if [[ "${INIT_N8N^^}" == "TRUE" ]]; then
+INIT_N8N_VAL="${INIT_N8N:-}"
+if [[ "${INIT_N8N_VAL^^}" == "TRUE" ]]; then
   echo "--- Initialize certificate renewal setup for N8N ---"
   export CERT_DOMAIN="n8n.${ROOT_DOMAIN}"
   export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/n8n.env"
@@ -93,7 +99,8 @@ if [[ "${INIT_N8N^^}" == "TRUE" ]]; then
 fi
 
 # node-red
-if [[ "${INIT_NODE_RED^^}" == "TRUE" ]]; then
+INIT_NODE_RED_VAL="${INIT_NODE_RED:-}"
+if [[ "${INIT_NODE_RED_VAL^^}" == "TRUE" ]]; then
   echo "--- Initialize certificate renewal setup for Node-RED ---"
   export CERT_DOMAIN_1="node-red.${ROOT_DOMAIN}"
   export CERT_DOMAIN_2="automation.${ROOT_DOMAIN}"

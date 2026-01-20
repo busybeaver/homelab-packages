@@ -1,0 +1,19 @@
+schemaVersion: "2.0.0"
+metadataTest:
+  workdir: "/config"
+
+commandTests:
+  - name: "hass version"
+    command: "hass"
+    args: ["--version"]
+    expectedOutput: ["2025.12"]
+
+fileExistenceTests:
+  - name: "home-assistant service run script"
+    path: "/etc/services.d/home-assistant/run"
+    shouldExist: true
+
+fileContentTests:
+  - name: "home-assistant service run script content"
+    path: "/etc/services.d/home-assistant/run"
+    expectedContents: ["python3", "-m", "homeassistant"]

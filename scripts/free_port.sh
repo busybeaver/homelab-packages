@@ -41,7 +41,7 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-NGINX_MUSTACHE_DIR="/usr/syno/share/nginx"
+NGINX_MUSTACHE_DIR="${NGINX_MUSTACHE_DIR:-/usr/syno/share/nginx}"
 if [[ ! -d "${NGINX_MUSTACHE_DIR}" ]]; then
     echo "Error: ${NGINX_MUSTACHE_DIR} does not exist. This script is intended for Synology DSM."
     exit 1
@@ -73,6 +73,8 @@ fi
 
 echo "Made these changes:"
 
-diff /usr/syno/share/nginx/ "$CURRENT_BACKUP_DIR" 2>&1 | tee "$CURRENT_BACKUP_DIR/changes.log"
+# diff returns 1 if differences are found, which is expected here.
+# we use "|| true" to prevent the script from exiting due to "set -e" and "pipefail".
+diff "${NGINX_MUSTACHE_DIR}/" "$CURRENT_BACKUP_DIR" 2>&1 | tee "$CURRENT_BACKUP_DIR/changes.log" || true
 
 echo "free_port.sh script finished successfully at $(date)"

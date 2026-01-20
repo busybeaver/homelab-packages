@@ -13,8 +13,8 @@ shopt -u nocasematch
 echo "update_docker_socks.sh script started at $(date)"
 
 # change group of the docker.sock, so selected users can access/use it properly and without user elevation
-DOCKER_SOCK="/var/run/docker.sock"
-DOCKER_GROUP="docker-sock-users"
+DOCKER_SOCK="${DOCKER_SOCK:-/var/run/docker.sock}"
+DOCKER_GROUP="${DOCKER_GROUP:-docker-sock-users}"
 
 if [[ -S "${DOCKER_SOCK}" ]]; then
     echo "Changing group of ${DOCKER_SOCK} to ${DOCKER_GROUP}"

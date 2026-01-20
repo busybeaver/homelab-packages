@@ -1,0 +1,21 @@
+schemaVersion: "2.0.0"
+metadataTest:
+  workdir: "/app"
+  user: "node"
+  exposedPorts: ["3001"]
+
+commandTests:
+  - name: "node version"
+    command: "node"
+    args: ["--version"]
+    expectedOutput: ["v"]
+
+fileExistenceTests:
+  - name: "custom entrypoint"
+    path: "/app/extra/entrypoint.sh"
+    shouldExist: true
+
+fileContentTests:
+  - name: "custom entrypoint content"
+    path: "/app/extra/entrypoint.sh"
+    expectedContents: ["node", "server/server.js"]

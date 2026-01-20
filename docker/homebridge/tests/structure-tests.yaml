@@ -1,0 +1,23 @@
+schemaVersion: "2.0.0"
+metadataTest:
+  workdir: "/var/lib/homebridge"
+  cmd: ["/opt/homebridge/start.sh"]
+
+commandTests:
+  - name: "homebridge version"
+    command: "/opt/homebridge/bin/homebridge"
+    args: ["--version"]
+    expectedOutput: ["1.7.7"]
+
+fileExistenceTests:
+  - name: "homebridge start script"
+    path: "/opt/homebridge/start.sh"
+    shouldExist: true
+  - name: "homebridge source script"
+    path: "/opt/homebridge/source.sh"
+    shouldExist: true
+
+fileContentTests:
+  - name: "homebridge source script content"
+    path: "/opt/homebridge/source.sh"
+    expectedContents: ["export PATH", "/opt/homebridge/bin"]

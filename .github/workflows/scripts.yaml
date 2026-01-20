@@ -15,8 +15,37 @@ concurrency:
   group: ${{ github.ref == 'refs/heads/main' && format('ci-main-{0}-{1}', github.workflow, github.sha) || format('ci-{0}-{1}', github.workflow, github.ref) }}
 
 jobs:
+  test:
+    name: 'Test'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: StepSecurity - Harden Github-hosted Runners
+        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
+        with:
+          egress-policy: audit
+          disable-telemetry: true
+          disable-sudo: true
+
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+
+      - name: Bats - Setup
+        id: bats_setup
+        uses: bats-core/bats-action@v3.0.0
+
+      - name: Bats - Test Scripts
+        id: bats_test
+        run: bats scripts/tests/*.bats
+
   checksums_signature:
     name: 'Create Checksums and Signature'
+    needs: [test]
     runs-on: ubuntu-latest
 
     defaults:
