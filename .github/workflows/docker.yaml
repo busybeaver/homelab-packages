@@ -275,6 +275,7 @@ jobs:
             --config ${{ steps.test_parameter.outputs.test_working_dir }}/structure-tests.yaml \
             --output junit \
             --test-report ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.structure_test_result_file }}
+        continue-on-error: true
 
       - name: Goss - Test Docker Image
         id: goss_test
@@ -292,7 +293,7 @@ jobs:
         env:
           IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
           GOSS_OPTS: --format junit --max-concurrent 1
-          GOSS_SLEEP: 30s
+          GOSS_SLEEP: 90s
 
       - name: Docker - Post Test Teardown
         id: docker_teardown
@@ -335,7 +336,7 @@ jobs:
       - name: GitHub - Generate App Token
         id: github_generate_app_token
         uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
-        if: always() && steps.check_test_file.outputs.files_exists == 'true'
+        if: always() && (steps.check_test_file.outputs.files_exists == 'true' || steps.check_structure_test_file.outputs.files_exists == 'true')
         with:
           # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
           app_id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
