@@ -31,7 +31,7 @@ ARG CA_CERTIFICATES_VERSION="20240203"
 # renovate: datasource=repology depName=ubuntu_24_04/libcap2 versioning=loose
 ARG LIBCAP_VERSION="1:2.66-5ubuntu2.2"
 # renovate: datasource=github-tags depName=homebridge/homebridge-apt-pkg versioning=loose
-ARG HOMEBRIDGE_VERSION="v1.7.7"
+ARG HOMEBRIDGE_VERSION="v1.8.13-beta.20260211"
 
 RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     # Setup repository
