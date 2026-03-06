@@ -2,7 +2,7 @@
 FROM louislam/uptime-kuma:2-rootless
 
 # renovate: datasource=repology depName=debian_12/libcap2 versioning=loose
-ARG LIBCAP_VERSION="1:2.66-4+deb12u2"
+ARG LIBCAP_VERSION="1:2.66-4+deb12u2+b2"
 
 # override entrypoint.sh file to support rootless execution of the container
 COPY entrypoint.sh /app/extra/entrypoint.sh
