@@ -14,6 +14,8 @@ on:
   schedule:
     - cron: '0 12 * * 1'
 
+permissions: {}
+
 concurrency:
   # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
   # something broke; else, we cancel "old" builds and run/(re)start the build with the latest changes
@@ -23,6 +25,7 @@ jobs:
   matrix_setup:
     name: 'Setup Build Matrix'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     defaults:
       run:
@@ -42,10 +45,13 @@ jobs:
           egress-policy: audit
           disable-telemetry: true
           disable-sudo: true
+github.com:443
 
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 1
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -78,6 +84,7 @@ jobs:
     name: 'Code Quality Checks'
     needs: [matrix_setup]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     strategy:
       matrix:
@@ -98,10 +105,14 @@ jobs:
           egress-policy: audit
           disable-telemetry: true
           disable-sudo: true
+github.com:443
+            objects.githubusercontent.com:443
 
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 1
 
       - name: SuperLinter - Lint Dockerfile
         id: superlinter_scan
@@ -118,6 +129,7 @@ jobs:
     name: 'Build'
     needs: [matrix_setup]
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     strategy:
       matrix:
@@ -134,13 +146,15 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: audit
+          egress-policy: audit # dynamic dependencies during build
           disable-telemetry: true
           disable-sudo: true
 
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 1
 
       - name: Docker - Set-Up Environment
         id: docker_setup
@@ -172,6 +186,7 @@ jobs:
     name: 'Test'
     needs: [matrix_setup, docker_build]
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     strategy:
       matrix:
@@ -192,13 +207,15 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: audit
+          egress-policy: audit # tests may need external access
           disable-telemetry: true
           disable-sudo: true
 
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 1
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
@@ -306,11 +323,10 @@ jobs:
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
+        uses: actions/create-github-app-token@21cfef942ad9730594833246835f992305540306 # v1.11.0
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
-          # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
-          app_id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
+          app-id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
           private_key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
 
       - name: GitHub - Publish Unit Test Results
@@ -330,6 +346,7 @@ jobs:
     name: 'Container Security Checks'
     needs: [matrix_setup, docker_build]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     strategy:
       matrix:
@@ -347,13 +364,15 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: audit
+          egress-policy: audit # security scan needs external access
           disable-telemetry: true
           disable-sudo: true
 
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 1
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
@@ -405,6 +424,7 @@ jobs:
     name: 'Publish'
     needs: [matrix_setup, code_quality, docker_build, docker_test, container_security]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     if: github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && !github.event.act
 
@@ -428,7 +448,7 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: audit
+          egress-policy: audit # publish needs external registry access
           disable-telemetry: true
           disable-sudo: true
 
