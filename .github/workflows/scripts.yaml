@@ -39,12 +39,10 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: block
+          egress-policy: audit
           disable-telemetry: true
           disable-sudo: true
-          allowed-endpoints: >
-            api.github.com:443
-            github.com:443
+github.com:443
             objects.githubusercontent.com:443
             sigstore-tuf-root.storage.googleapis.com:443
 

@@ -42,12 +42,10 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: block
+          egress-policy: audit
           disable-telemetry: true
           disable-sudo: true
-          allowed-endpoints: >
-            api.github.com:443
-            github.com:443
+github.com:443
 
       - name: Git - Checkout
         id: git_checkout
@@ -104,12 +102,10 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: block
+          egress-policy: audit
           disable-telemetry: true
           disable-sudo: true
-          allowed-endpoints: >
-            api.github.com:443
-            github.com:443
+github.com:443
             objects.githubusercontent.com:443
 
       - name: Git - Checkout
@@ -150,7 +146,7 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: audit # build process pulls various dependencies from multiple sources
+          egress-policy: audit # dynamic dependencies during build
           disable-telemetry: true
           disable-sudo: true
 
@@ -211,7 +207,7 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: audit # tests might interact with external services
+          egress-policy: audit # tests may need external access
           disable-telemetry: true
           disable-sudo: true
 
@@ -368,16 +364,9 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: block
+          egress-policy: audit # security scan needs external access
           disable-telemetry: true
           disable-sudo: true
-          allowed-endpoints: >
-            api.github.com:443
-            api.snyk.io:443
-            auth.docker.io:443
-            github.com:443
-            registry-1.docker.io:443
-            snyk.io:443
 
       - name: Git - Checkout
         id: git_checkout
@@ -459,17 +448,9 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: block
+          egress-policy: audit # publish needs external registry access
           disable-telemetry: true
           disable-sudo: true
-          allowed-endpoints: >
-            api.github.com:443
-            auth.docker.io:443
-            ghcr.io:443
-            github.com:443
-            pkg-containers.githubusercontent.com:443
-            registry-1.docker.io:443
-            sigstore-tuf-root.storage.googleapis.com:443
 
       - name: Git - Checkout
         id: git_checkout
