@@ -292,7 +292,11 @@ jobs:
         # the service/container to test needs to be called "container_under_test" in the docker-compose.yaml file;
         # it's important to set DEBUG=true, else will the docker container logs be deleted after running the tests;
         # we use "sed '1d'" to remove the first line of the output. it contains the name of the container but we only need the XML based JUnit results
-        run: DEBUG=true dcgoss run container_under_test | sed '1d' | tee ${{ steps.test_parameter.outputs.test_result_file }}
+        run: |
+          curl -L https://raw.githubusercontent.com/aelsabbahy/goss/master/extras/dcgoss/dcgoss -o /tmp/dcgoss
+          chmod +x /tmp/dcgoss
+          sudo mv /tmp/dcgoss /usr/local/bin/dcgoss
+          DEBUG=true dcgoss run container_under_test | sed -n '/<?xml/,$p' | tee ${{ steps.test_parameter.outputs.test_result_file }}
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         # TODO: temporary until this error is resolved:
         # https://github.com/busybeaver/homelab-packages/actions/runs/17178559407/job/48738026593#step:12:45

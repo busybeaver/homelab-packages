@@ -22,7 +22,7 @@ commandTests:
   - name: "caddy capabilities"
     command: "getcap"
     args: ["/usr/bin/caddy"]
-    expectedOutput: ["cap_net_bind_service+eip"]
+    expectedOutput: ["cap_net_bind_service=eip"]
 
 fileExistenceTests:
   - name: "caddy binary"

@@ -13,7 +13,7 @@ commandTests:
   - name: "homebridge capabilities"
     command: "getcap"
     args: ["/opt/homebridge/bin/node"]
-    expectedOutput: ["cap_net_bind_service+eip"]
+    expectedOutput: ["cap_net_bind_service=eip"]
 
 fileExistenceTests:
   - name: "homebridge start script"
