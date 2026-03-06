@@ -9,6 +9,8 @@ on:
       - 'scripts/**'
       - '.github/workflows/scripts.yaml'
 
+permissions: {}
+
 concurrency:
   # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
   # something broke; else, we cancel "old" builds and run/(re)start the build with the latest changes
@@ -18,6 +20,7 @@ jobs:
   checksums_signature:
     name: 'Create Checksums and Signature'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     defaults:
       run:
@@ -25,7 +28,7 @@ jobs:
         working-directory: './scripts/'
 
     permissions:
-      contents: read
+      contents: write
 
     env:
       # renovate: datasource=github-releases depName=sigstore/cosign
@@ -36,9 +39,14 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: audit
+          egress-policy: block
           disable-telemetry: true
           disable-sudo: true
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+            objects.githubusercontent.com:443
+            sigstore-tuf-root.storage.googleapis.com:443
 
       - name: Git - Checkout
         id: git_checkout
@@ -49,6 +57,7 @@ jobs:
           # this is the token that the "git-auto-commit" action is using, so we use the one from the app
           # https://github.com/marketplace/actions/git-auto-commit#commits-made-by-this-action-do-not-trigger-new-workflow-runs
           ssh-key: ${{ secrets.SSH_KEY }}
+          fetch-depth: 1
 
       - name: Cosign - Setup
         id: cosign_setup

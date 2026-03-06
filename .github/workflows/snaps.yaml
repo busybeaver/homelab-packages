@@ -27,6 +27,8 @@ on:
           - 'true'
           - 'false'
 
+permissions: {}
+
 concurrency:
   # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
   # something broke; else, we cancel "old" builds and run/(re)start the build with the latest changes
@@ -36,6 +38,7 @@ jobs:
   matrix_setup:
     name: 'Setup Build Matrix'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     defaults:
       run:
@@ -49,13 +52,18 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: audit
+          egress-policy: block
           disable-telemetry: true
           disable-sudo: true
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
 
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 1
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -77,6 +85,7 @@ jobs:
     name: 'Setup Arch Matrix'
     needs: [matrix_setup]
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     strategy:
       matrix:
@@ -94,13 +103,18 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: audit
+          egress-policy: block
           disable-telemetry: true
           disable-sudo: true
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
 
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 1
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -119,6 +133,7 @@ jobs:
     name: 'Build'
     needs: [matrix_setup, matrix_arch_setup]
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     strategy:
       matrix:
@@ -136,13 +151,20 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: audit
+          egress-policy: block
           disable-telemetry: true
           disable-sudo: true
+          allowed-endpoints: >
+            api.github.com:443
+            api.snapcraft.io:443
+            github.com:443
+            objects.githubusercontent.com:443
 
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 1
 
       - name: Snapcraft - Set up Build Environment
         id: snapcraft_setup
@@ -172,6 +194,7 @@ jobs:
     name: 'Install and Test'
     needs: [matrix_setup, snapcraft_build]
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     strategy:
       matrix:
@@ -192,13 +215,19 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: audit
+          egress-policy: block
           disable-telemetry: true
           disable-sudo: true
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+            objects.githubusercontent.com:443
 
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 1
 
       - name: GitHub - Download Snap Artifact
         id: github_download
@@ -305,17 +334,16 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: ${{ format(steps.test_parameter.outputs.snap_logs_name, matrix.package) }}
+          name: ${{ format(needs.matrix_setup.outputs.snap_logs_name, matrix.package) }}
           path: ${{ steps.snapcraft_teardown.outputs.snap_logs }}
           retention-days: 7
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
+        uses: actions/create-github-app-token@21cfef942ad9730594833246835f992305540306 # v1.11.0
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
-          # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
-          app_id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
+          app-id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
           private_key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
 
       - name: GitHub - Publish Unit Test Results
@@ -335,6 +363,7 @@ jobs:
     name: 'Publish'
     needs: [matrix_setup, matrix_arch_setup, snapcraft_test, snapcraft_build]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_release == 'true' && !github.event.act
 
@@ -354,9 +383,16 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: audit
+          egress-policy: block
           disable-telemetry: true
           disable-sudo: true
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+            objects.githubusercontent.com:443
+            api.snapcraft.io:443
+            dashboard.snapcraft.io:443
+            login.ubuntu.com:443
 
       - name: GitHub - Download Snap Artifact
         id: github_download

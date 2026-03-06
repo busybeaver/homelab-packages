@@ -15,6 +15,8 @@ on:
   # trigger manually if needed
   workflow_dispatch:
 
+permissions: {}
+
 concurrency:
   # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
   # something broke; else, we cancel "old" builds and run/(re)start the build with the latest changes
@@ -24,6 +26,7 @@ jobs:
   matrix_setup:
     name: 'Setup Build Matrix'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     defaults:
       run:
@@ -37,13 +40,18 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: audit
+          egress-policy: block
           disable-telemetry: true
           disable-sudo: true
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
 
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 1
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -61,6 +69,7 @@ jobs:
     name: 'Update Check'
     needs: [matrix_setup]
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     strategy:
       matrix:
@@ -77,32 +86,33 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: audit
+          egress-policy: block
           disable-telemetry: true
           disable-sudo: true
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+            files.pythonhosted.org:443
+            objects.githubusercontent.com:443
+            pypi.org:443
 
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          fetch-depth: 1
 
       - name: yq - Setup
         id: yq_setup
         uses: mikefarah/yq@796317b885ae219215caa36e9bdacc87c9962c15 # v4.48.2
 
-#      - name: Python - Get pip Cache Dir
-#        id: python_pip_cache_dir
-#        run: |
-#          echo "dir=$(pip cache dir)" >> "$GITHUB_OUTPUT"
-
-      - name: Python - Setup pip Dependencies Cache
-        id: python_pip_cache_setup
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      - name: Python - Setup
+        id: python_setup
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
         with:
-#          path: ${{ steps.python_pip_cache_dir.outputs.dir }}
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/*.pip') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: '.github/workflows/snaps_update.pip'
 
       - name: Python - Install Dependencies
         id: python_pip_install
@@ -158,10 +168,10 @@ jobs:
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
+        uses: actions/create-github-app-token@21cfef942ad9730594833246835f992305540306 # v1.11.0
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
-          app_id: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_ID }}
+          app-id: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_ID }}
           private_key: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_PRIVATE_KEY }}
 
       - name: GitHub - Setup GPG Keys
