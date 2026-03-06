@@ -1,0 +1,16 @@
+---
+command:
+  node node_modules/node-red/red.js --version:
+    exit-status: 0
+    stdout:
+      # renovate: datasource=docker depName=nodered/node-red
+      - "4.1.2"
+port:
+  tcp:1880:
+    listening: true
+http:
+  http://localhost:1880/:
+    status: 200
+process:
+  node:
+    running: true

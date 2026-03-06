@@ -18,6 +18,6 @@ HOMELAB_PACKAGES_CONFIG="${HOMELAB_PACKAGES_CONFIG_FOLDER:-~/homelab-packages-co
 export ACME_HOME="${HOMELAB_PACKAGES_CONFIG}/acme.sh"
 
 # refresh all certificates
-bash scripts/acme_run.sh --cron --insecure
+bash "${BASH_SOURCE%/*}/acme_run.sh" --cron --insecure
 
 echo "acme_cron.sh script finished successfully at $(date)"
