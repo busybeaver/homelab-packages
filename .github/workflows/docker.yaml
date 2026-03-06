@@ -150,15 +150,9 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: block
+          egress-policy: audit # build process pulls various dependencies from multiple sources
           disable-telemetry: true
           disable-sudo: true
-          allowed-endpoints: >
-            api.github.com:443
-            auth.docker.io:443
-            github.com:443
-            production.cloudflare.docker.com:443
-            registry-1.docker.io:443
 
       - name: Git - Checkout
         id: git_checkout
@@ -217,13 +211,9 @@ jobs:
       - name: StepSecurity - Harden Github-hosted Runners
         uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
-          egress-policy: block
+          egress-policy: audit # tests might interact with external services
           disable-telemetry: true
           disable-sudo: true
-          allowed-endpoints: >
-            api.github.com:443
-            github.com:443
-            objects.githubusercontent.com:443
 
       - name: Git - Checkout
         id: git_checkout
@@ -341,7 +331,7 @@ jobs:
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           app-id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
-          private-key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
+          private_key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
 
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
