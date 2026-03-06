@@ -6,9 +6,10 @@ name: 'Scripts CI'
   push:
     branches:
       - main
-    paths:
-      - 'scripts/**'
-      - '.github/workflows/scripts.yaml'
+  # run on pull requests that target the main branch
+  pull_request:
+    branches:
+      - main
 
 concurrency:
   # on main, we want all builds to complete even if commits/merging happens
