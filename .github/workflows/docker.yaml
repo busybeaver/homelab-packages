@@ -338,7 +338,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
-          name: ${{ format(steps.test_parameter.outputs.container_logs_name, matrix.package) }}
+          name: container_logs_${{ matrix.package }}.log
           path: ${{ steps.docker_teardown.outputs.container_logs }}
           retention-days: 7
 
@@ -358,7 +358,7 @@ jobs:
         with:
           github_token: ${{ steps.github_generate_app_token.outputs.token }}
           check_name: Test Results (Docker - ${{ matrix.package }})
-          junit_files: ${{ steps.test_parameter.outputs.test_working_dir }}/*.xml
+          junit_files: ${{ steps.test_parameter.outputs.test_working_dir }}/**/*.xml
           # we only add github checks to the PR/commit, but don't create PR comments; reason is that comments will not
           # be replaced but always newly added due to (it looks for "github-actions" user instead of the github app user):
           # https://github.com/EnricoMi/publish-unit-test-result-action/blob/ae7c14a87cf1a1200805b487debc65963bdb3f2d/python/publish/publisher.py#L493
