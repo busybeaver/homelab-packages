@@ -18,7 +18,7 @@ commandTests:
   - name: "node capabilities"
     command: "getcap"
     args: ["/usr/local/bin/node"]
-    expectedOutput: ["cap_net_bind_service=ep"]
+    expectedOutput: [".*cap_net_bind_service=ep.*"]
 
 fileExistenceTests:
   - name: "custom entrypoint"

@@ -13,7 +13,7 @@ commandTests:
   - name: "node capabilities"
     command: "getcap"
     args: ["/usr/local/bin/node"]
-    expectedOutput: ["cap_net_bind_service=eip"]
+    expectedOutput: [".*cap_net_bind_service=eip.*"]
 
 fileExistenceTests:
   - name: "node-red package.json"
