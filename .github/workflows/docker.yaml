@@ -296,6 +296,8 @@ jobs:
           curl -L https://raw.githubusercontent.com/aelsabbahy/goss/master/extras/dcgoss/dcgoss -o /tmp/dcgoss
           chmod +x /tmp/dcgoss
           sudo mv /tmp/dcgoss /usr/local/bin/dcgoss
+          echo -e '#!/bin/bash\ndocker compose "$@"' | sudo tee /usr/local/bin/docker-compose > /dev/null
+          sudo chmod +x /usr/local/bin/docker-compose
           DEBUG=true dcgoss run container_under_test | sed -n '/<?xml/,$p' | tee ${{ steps.test_parameter.outputs.test_result_file }}
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         # TODO: temporary until this error is resolved:
