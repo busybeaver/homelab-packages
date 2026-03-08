@@ -1,0 +1,8 @@
+---
+version: '3'
+services:
+  container_under_test:
+    container_name: container_under_test
+    image: "${IMAGE_NAME}"
+    ports:
+      - "3001:3001"

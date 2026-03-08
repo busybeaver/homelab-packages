@@ -1,7 +1,7 @@
 command:
 port:
 http:
-  http://localhost:80/:
+  http://127.0.0.1:80/:
     method: GET
     status: 200
     allow-insecure: false
