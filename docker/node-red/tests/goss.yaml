@@ -9,7 +9,7 @@ port:
   tcp:1880:
     listening: true
 http:
-  http://localhost:1880/:
+  http://127.0.0.1:1880/:
     status: 200
 process:
   node:

@@ -17,8 +17,9 @@ commandTests:
     args: ["list-modules"]
     expectedOutput:
       - "dns.providers.cloudflare"
-      - "http.encoders.transform"
+      - "http.encoders.transform_encoder"
       - "http.handlers.request_id"
+      - "http.handlers.crowdsec"
   - name: "caddy capabilities"
     command: "getcap"
     args: ["/usr/bin/caddy"]
