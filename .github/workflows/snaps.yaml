@@ -329,7 +329,7 @@ jobs:
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: actions/create-github-app-token@v2.2.1
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           app-id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
