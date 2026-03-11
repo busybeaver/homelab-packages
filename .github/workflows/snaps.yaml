@@ -55,7 +55,8 @@ jobs:
           egress-policy: audit
           disable-telemetry: true
           disable-sudo: true
-github.com:443
+          allowed-endpoints:
+            github.com:443
 
       - name: Git - Checkout
         id: git_checkout
@@ -104,7 +105,8 @@ github.com:443
           egress-policy: audit
           disable-telemetry: true
           disable-sudo: true
-github.com:443
+          allowed-endpoints:
+            github.com:443
 
       - name: Git - Checkout
         id: git_checkout
@@ -373,7 +375,8 @@ github.com:443
           egress-policy: audit
           disable-telemetry: true
           disable-sudo: true
-github.com:443
+          allowed-endpoints:
+            github.com:443
             objects.githubusercontent.com:443
             api.snapcraft.io:443
             dashboard.snapcraft.io:443
