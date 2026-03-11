@@ -6,7 +6,7 @@ ARG NPM_CACHE_FOLDER="/usr/src/node-red/npm_cache"
 # check here on which alpine version node-red is based on and update the renovate config when needed:
 # https://github.com/node-red/node-red-docker/blob/master/docker-custom/Dockerfile.custom
 # https://repology.org/project/libcap/versions
-# ---
+
 # renovate: datasource=repology depName=alpine_3_22/libcap versioning=loose
 ARG LIBCAP_VERSION="2.76-r0"
 

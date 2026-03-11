@@ -4,8 +4,10 @@ FROM louislam/uptime-kuma:2-rootless@sha256:63926d0acda9863e50f1fb037953ef01f6a2
 # renovate: datasource=repology depName=debian_12/libcap2 versioning=loose
 ARG LIBCAP_VERSION="1:2.66-4+deb12u2+b2"
 
+# TODO: is this still needed after switching to rootless image? if not, remove it
 # override entrypoint.sh file to support rootless execution of the container
 COPY entrypoint.sh /app/extra/entrypoint.sh
+
 USER root
 RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     apt-get update && \
