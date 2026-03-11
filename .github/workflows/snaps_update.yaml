@@ -161,7 +161,7 @@ jobs:
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: actions/create-github-app-token@21cfef942ad9730594833246835f992305540306 # v1.11.0
+        uses: actions/create-github-app-token@5d869da34e18e7287c1daad50e0b8ea0f506ce69 # v1.11.0
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           app-id: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_ID }}
