@@ -42,7 +42,8 @@ jobs:
           egress-policy: audit
           disable-telemetry: true
           disable-sudo: true
-github.com:443
+          allowed-endpoints:
+            github.com:443
             objects.githubusercontent.com:443
             sigstore-tuf-root.storage.googleapis.com:443
 
