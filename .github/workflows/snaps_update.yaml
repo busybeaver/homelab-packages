@@ -43,7 +43,8 @@ jobs:
           egress-policy: audit
           disable-telemetry: true
           disable-sudo: true
-github.com:443
+          allowed-endpoints:
+            github.com:443
 
       - name: Git - Checkout
         id: git_checkout
