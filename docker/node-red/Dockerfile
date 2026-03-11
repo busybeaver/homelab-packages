@@ -15,7 +15,7 @@ USER root
 RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk \
     apk --update-cache upgrade && \
     apk --update-cache add libcap=${LIBCAP_VERSION} && \
-    setcap 'cap_net_bind_service=+eip' $(readlink -f $(which node))
+    setcap 'cap_net_bind_service=+eip' "$(readlink -f "$(which node)")"
 USER node-red
 
 # renovate: datasource=npm depName=node-red-contrib-homekit-bridged versioning=npm
