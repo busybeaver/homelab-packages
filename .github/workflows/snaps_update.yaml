@@ -161,11 +161,11 @@ jobs:
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: actions/create-github-app-token@21cfef942ad9730594833246835f992305540306 # v1.11.0
+        uses: actions/create-github-app-token@v2.2.1
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           app-id: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_ID }}
-          private_key: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_PRIVATE_KEY }}
+          private-key: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_PRIVATE_KEY }}
 
       - name: GitHub - Setup GPG Keys
         id: github_setup_gpg
