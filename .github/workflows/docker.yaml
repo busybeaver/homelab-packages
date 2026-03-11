@@ -329,7 +329,7 @@ jobs:
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           app-id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
-          private_key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
+          private-key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
 
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
