@@ -37,14 +37,14 @@ DELETE_OLD_BACKUPS="${DELETE_OLD_BACKUPS:-false}" # change to true to automatica
 KEEP_BACKUP_DAYS="${KEEP_BACKUP_DAYS:-30}"
 
 if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root"
-   exit 1
+  echo "This script must be run as root"
+  exit 1
 fi
 
 NGINX_MUSTACHE_DIR="/usr/syno/share/nginx"
 if [[ ! -d "${NGINX_MUSTACHE_DIR}" ]]; then
-    echo "Error: ${NGINX_MUSTACHE_DIR} does not exist. This script is intended for Synology DSM."
-    exit 1
+  echo "Error: ${NGINX_MUSTACHE_DIR} does not exist. This script is intended for Synology DSM."
+  exit 1
 fi
 
 DATE=$(date +%Y-%m-%d-%H-%M-%S)
