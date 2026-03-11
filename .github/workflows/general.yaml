@@ -26,8 +26,7 @@ jobs:
     permissions:
       contents: read
       statuses: write
-    timeout-minutes: 30
-
+    # timeout-minutes: 30
     uses: busybeaver/homelab-shared/.github/workflows/general.yaml@e3965e42945bfb0242bf8c9334e0f35ee40696d7 # v1.1.77
     with:
       lintDocker: true
