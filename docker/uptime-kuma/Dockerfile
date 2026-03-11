@@ -17,5 +17,5 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     # Make start script executable
     chmod +x /app/extra/entrypoint.sh && \
     # Allow nodejs to run on privileged ports
-    setcap 'cap_net_bind_service=+ep' /usr/local/bin/node
+    setcap 'cap_net_bind_service=+eip' $(readlink -f $(which node))
 USER node
