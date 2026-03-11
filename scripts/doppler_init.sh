@@ -29,8 +29,8 @@ sudo chown root:root "${DOPPLER_TEMP_INSTALL_DIRECTORY}/doppler"
 
 # Verify binary works before moving
 if ! "${DOPPLER_TEMP_INSTALL_DIRECTORY}/doppler" --version; then
-    echo "Error: Downloaded Doppler binary is not working"
-    exit 1
+  echo "Error: Downloaded Doppler binary is not working"
+  exit 1
 fi
 
 sudo mv "${DOPPLER_TEMP_INSTALL_DIRECTORY}/doppler" /usr/local/bin/doppler
