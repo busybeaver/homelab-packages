@@ -41,7 +41,7 @@ ARG NODE_RED_BLIND_CONTROLLER_VERSION=4.8.6
 # renovate: datasource=npm depName=node-red-node-ping versioning=npm
 ARG NODE_RED_NODE_PING_VERSION=0.3.3
 # renovate: datasource=npm depName=node-red-contrib-tts-ultimate versioning=npm
-ARG NODE_RED_TTS_ULTIMATE_VERSION=3.0.2
+ARG NODE_RED_TTS_ULTIMATE_VERSION=3.0.6
 # renovate: datasource=npm depName=node-red-contrib-homeconnect versioning=npm
 ARG NODE_RED_HOMECONNECT_VERSION=0.6.7
 # renovate: datasource=npm depName=node-red-contrib-credentials versioning=npm
