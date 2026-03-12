@@ -27,7 +27,7 @@ jobs:
       contents: read
       statuses: write
     # timeout-minutes: 30
-    uses: busybeaver/homelab-shared/.github/workflows/general.yaml@e3965e42945bfb0242bf8c9334e0f35ee40696d7 # v1.1.77
+    uses: busybeaver/homelab-shared/.github/workflows/general.yaml@471eac81b3c7c08a0f5a0ddd6cd79559a0ae7e61 # v1.1.103
     with:
       lintDocker: true
       filterRegexExlude: .*\.github\/linters\/.*
