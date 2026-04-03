@@ -16,18 +16,18 @@ on:
 
 permissions: {}
 
-# concurrency:
-#   # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
-#   # something broke; else, we cancel "old" builds and run/(re)start the build with the latest changes
-#   group: ${{ github.ref == 'refs/heads/main' && format('ci-main-{0}-{1}', github.workflow, github.sha) || format('ci-{0}-{1}', github.workflow, github.ref) }}
+concurrency:
+  # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
+  # something broke; else, we cancel "old" builds and run/(re)start the build with the latest changes
+  group: ${{ github.ref == 'refs/heads/main' && format('ci-main-{0}-{1}', github.workflow, github.sha) || format('ci-{0}-{1}', github.workflow, github.ref) }}
 
 jobs:
   general:
     permissions:
       contents: read
       statuses: write
-    # timeout-minutes: 30
-    uses: busybeaver/homelab-shared/.github/workflows/general.yaml@471eac81b3c7c08a0f5a0ddd6cd79559a0ae7e61 # v1.1.103
+    timeout-minutes: 30
+    uses: busybeaver/homelab-shared/.github/workflows/general.yaml@5b2fef423f7d42c9b059a5b08996f2ca5210a0c6 # v1.1.110
     with:
       lintDocker: true
       filterRegexExlude: .*\.github\/linters\/.*

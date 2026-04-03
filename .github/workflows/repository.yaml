@@ -26,8 +26,8 @@ permissions:
 
 jobs:
   repository:
-    # timeout-minutes: 20
-    uses: busybeaver/homelab-shared/.github/workflows/repository.yaml@471eac81b3c7c08a0f5a0ddd6cd79559a0ae7e61 # v1.1.103
+    timeout-minutes: 20
+    uses: busybeaver/homelab-shared/.github/workflows/repository.yaml@5b2fef423f7d42c9b059a5b08996f2ca5210a0c6 # v1.1.110
     secrets:
       REPOSITORY_ASSISTANT_APP_ID: ${{ secrets.REPOSITORY_ASSISTANT_APP_ID }}
       REPOSITORY_ASSISTANT_PRIVATE_KEY: ${{ secrets.REPOSITORY_ASSISTANT_PRIVATE_KEY }}
