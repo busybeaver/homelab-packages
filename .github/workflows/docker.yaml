@@ -45,7 +45,7 @@ jobs:
         with:
           egress-policy: block
           disable-telemetry: true
-          disable-sudo: false
+          disable-sudo: true
           allowed-endpoints:
             api.stepsecurity.io:443
             github.com:443
@@ -117,7 +117,8 @@ jobs:
         id: git_checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          fetch-depth: 1
+          # super-linter requires the full git history to correctly identify changed files
+          fetch-depth: 0
 
       - name: SuperLinter - Lint Dockerfile
         id: superlinter_scan
@@ -467,8 +468,8 @@ jobs:
         id: git_checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          # required by tj-actions/changed-files
-          fetch-depth: 2
+          # required by tj-actions/changed-files to correctly identify changed files
+          fetch-depth: 0
 
       - name: Git - Get Changed Files
         id: git_changed_files
