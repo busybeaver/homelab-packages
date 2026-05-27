@@ -18,7 +18,7 @@ COPY --from=build /usr/bin/caddy /usr/bin/caddy
 # https://repology.org/project/libcap/versions
 # ---
 # renovate: datasource=repology depName=alpine_3_22/libcap versioning=loose
-ARG LIBCAP_VERSION="2.76-r0"
+ARG LIBCAP_VERSION="2.78-r0"
 
 # Update outdated (and potentially vulnerable) dependencies;
 # Allow to run Caddy on privileged ports (as a non-root user)
