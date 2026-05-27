@@ -46,6 +46,8 @@ ARG NODE_RED_TTS_ULTIMATE_VERSION=3.0.7
 ARG NODE_RED_HOMECONNECT_VERSION=0.6.7
 # renovate: datasource=npm depName=node-red-contrib-credentials versioning=npm
 ARG NODE_RED_CREDENTIALS_VERSION=0.2.3
+# renovate: datasource=npm depName=node-red-contrib-feiertage-germany versioning=npm
+ARG NODE_RED_FEIERTAGE_GERMANY_VERSION=1.6.2
 
 RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CACHE_FOLDER}" \
     npm_config_cache="${NPM_CACHE_FOLDER}" npm install --no-fund --no-package-lock --save-prod --save-exact --no-update-notifier \
@@ -62,4 +64,5 @@ RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CAC
     node-red-node-ping@${NODE_RED_NODE_PING_VERSION} \
     node-red-contrib-tts-ultimate@${NODE_RED_TTS_ULTIMATE_VERSION} \
     node-red-contrib-homeconnect@${NODE_RED_HOMECONNECT_VERSION} \
-    node-red-contrib-credentials@${NODE_RED_CREDENTIALS_VERSION}
+    node-red-contrib-credentials@${NODE_RED_CREDENTIALS_VERSION} \
+    node-red-contrib-feiertage-germany@${NODE_RED_FEIERTAGE_GERMANY_VERSION}
