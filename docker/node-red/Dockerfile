@@ -8,7 +8,7 @@ ARG NPM_CACHE_FOLDER="/usr/src/node-red/npm_cache"
 # https://repology.org/project/libcap/versions
 
 # renovate: datasource=repology depName=alpine_3_22/libcap versioning=loose
-ARG LIBCAP_VERSION="2.76-r0"
+ARG LIBCAP_VERSION="2.78-r0"
 
 # Allow nodejs to run on privileged ports
 USER root
@@ -25,7 +25,7 @@ ARG NODE_RED_HUEMAGIC_VERSION=4.2.2
 # renovate: datasource=npm depName=node-red-node-pushover versioning=npm
 ARG NODE_RED_PUSHOVER_VERSION=0.3.1
 # renovate: datasource=npm depName=node-red-contrib-knx-ultimate versioning=npm
-ARG NODE_RED_KNX_ULTIMATE_VERSION=4.1.9
+ARG NODE_RED_KNX_ULTIMATE_VERSION=4.3.16
 # renovate: datasource=npm depName=node-red-contrib-sonos-plus versioning=npm
 ARG NODE_RED_SONOS_PLUS_VERSION=6.9.3
 # renovate: datasource=npm depName=node-red-contrib-sonos-event versioning=npm
