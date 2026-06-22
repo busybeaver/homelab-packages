@@ -1,0 +1,13 @@
+#!/bin/sh
+
+case $1 in
+  start)
+    synosystemctl start pkg-nomad
+  ;;
+  stop)
+    synosystemctl stop pkg-nomad
+  ;;
+  status)
+    systemctl is-active pkg-nomad
+  ;;
+esac
