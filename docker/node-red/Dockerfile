@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
-FROM nodered/node-red:4.1.2-20-minimal@sha256:98e744e897b9402831f0dde1c9baed472415563dea095854b4c1dc47701b9a8c
+FROM nodered/node-red:4.1.15-20-minimal@sha256:c18e0d0ee85eef30b9691f8eecf1c88e12fedc65ac820abbc143be1d40dc572b
 
 ARG NPM_CACHE_FOLDER="/usr/src/node-red/npm_cache"
 
