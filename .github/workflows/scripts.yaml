@@ -33,7 +33,7 @@ jobs:
 
     env:
       # renovate: datasource=github-releases depName=sigstore/cosign
-      COSIGN_VERSION: v2.6.1
+      COSIGN_VERSION: v2.6.5
       CHECKSUM_FILE: scripts.sha256
 
     steps:
