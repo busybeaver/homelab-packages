@@ -6,6 +6,7 @@
 "aqua:koalaman/shellcheck" = "0.11.0" # also used by actionlint for `run:` scripts
 "aqua:mvdan/sh" = "3.14.1" # shfmt
 "aqua:jqlang/jq" = "1.8.2" # used by the CI Gate (.github/scripts/ci-gate.sh)
+"aqua:zizmorcore/zizmor" = "1.31.1" # security audit of the GitHub Actions workflows
 # goss tests the Docker images; dcgoss is a script in the same release, so both pins must stay on the same version
 "aqua:goss-org/goss" = "0.4.10"
 "github:goss-org/goss" = { version = "0.4.10", asset_pattern = "dcgoss", bin = "dcgoss" }
@@ -14,7 +15,12 @@
 "aqua:oxc-project/oxc/oxfmt" = "0.75.0" # formatter (.oxfmtrc.json)
 "aqua:cli/cli" = "2.103.3" # gh
 "aqua:nektos/act" = "0.2.94" # runs the GitHub Actions workflows locally (.actrc)
-"github:liamg/comet" = "0.0.5" # assisted conventional commits
+"aqua:cocogitto/cocogitto" = "7.0.0" # conventional commits (cog.toml)
+# the linters of the super-linter CI checks, so they run locally as well (configs in .github/linters)
+"aqua:hadolint/hadolint" = "2.15.1"
+"github:editorconfig-checker/editorconfig-checker" = "4.0.2"
+"aqua:gitleaks/gitleaks" = "8.30.1"
+"aqua:rvben/rumdl" = "0.3.2" # Markdown, reads the markdownlint config
 
 [settings]
 lockfile = true
@@ -66,18 +72,37 @@ description = "Check the formatting of the given files, or all files without arg
 run = "oxfmt --check"
 
 [tasks."check:actions"]
-description = "Lint the GitHub Actions workflows, lint and test the CI scripts"
+description = "Lint and audit the GitHub Actions workflows, lint and test the CI scripts"
 run = [
   "actionlint",
+  "zizmor --offline .",
   "shellcheck .github/scripts/*.sh",
   "shfmt --diff .github/scripts/*.sh",
   "bash .github/scripts/test-ci-gate.sh",
 ]
 
+# the Docker CI lints only the images in docker/; info findings are shown but do not fail, as rules newer than the
+# hadolint of the super-linter CI check (e.g. DL3066) report on the info level
+[tasks."check:dockerfiles"]
+description = "Lint the Dockerfiles with hadolint"
+run = "git ls-files -z -- ':(glob)docker/**/Dockerfile*' | xargs -0 hadolint --config .github/linters/.hadolint.yaml --failure-threshold warning"
+
+[tasks."check:editorconfig"]
+description = "Check the tracked files against the .editorconfig"
+run = "git ls-files -z | xargs -0 editorconfig-checker -config .github/linters/.ecrc"
+
+[tasks."check:secrets"]
+description = "Scan the files for secrets with gitleaks"
+run = "gitleaks dir --config .github/linters/.gitleaks.toml --redact --no-banner ."
+
+[tasks."check:markdown"]
+description = "Lint the Markdown files"
+run = "rumdl check --config .github/linters/.markdown-lint.yml ."
+
 [tasks.commit]
-description = "Assisted conventional commits with git"
+description = "Create a conventional commit: mise run commit <type> <message> [scope]; see `cog commit --help`"
 alias = "cm"
-run = "comet"
+run = "cog commit"
 
 [tasks.ci]
 description = "Run the GitHub Actions workflows locally; the arguments go to act (default event: push)"

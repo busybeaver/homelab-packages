@@ -53,8 +53,10 @@ The pre-commit hook formats the changed files with oxfmt and runs `mise run chec
 
 ## Development
 
-For a list of available tasks, run `mise tasks` within the Git repository. `mise run check` checks the formatting, lints
-the workflows and tests the CI scripts.
+For a list of available tasks, run `mise tasks` within the Git repository. `mise run check` runs the checks of the CI
+locally: formatting, Markdown, Dockerfiles, EditorConfig and secrets; it lints and audits the workflows (actionlint,
+zizmor) and tests the CI scripts. `mise run commit <type> <message> [scope]` creates a conventional commit with
+[cocogitto](https://docs.cocogitto.io); the commit-msg hook verifies the commit messages with it as well.
 
 Pull requests merge only with green required checks; `CI Gate` aggregates the jobs of the Docker CI, so its matrix can
 change without touching the branch protection.

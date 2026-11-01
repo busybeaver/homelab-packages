@@ -1,5 +1,5 @@
 commit-msg:
-  parallel: true
-  scripts:
-    "semantic-commit-message":
-      runner: bash
+  commands:
+    # checks the conventional commits format with the commit types of cog.toml; merge commits pass
+    conventional-commit:
+      run: mise exec -- cog verify --ignore-merge-commits --file {1}

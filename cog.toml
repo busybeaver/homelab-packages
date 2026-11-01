@@ -1,0 +1,3 @@
+# cocogitto (`cog`): the commit types are the defaults without revert, the same as the Conventional Commits check of the CI
+[commit_types]
+revert = {}
