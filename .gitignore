@@ -232,3 +232,6 @@ $RECYCLE.BIN/
 
 # created by the GitHub Actions CI build system
 **/.ci.env
+
+# snapcraft store login token created by `mise run snap:login-token`
+.login_token.txt

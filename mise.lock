@@ -283,6 +283,53 @@ checksum_source = "mise-versions"
 url = "https://github.com/mvdan/sh/releases/download/v3.14.1/shfmt_v3.14.1_windows_amd64.exe"
 url_api = "https://api.github.com/repos/mvdan/sh/releases/assets/547320827"
 
+[[tools."aqua:nektos/act"]]
+version = "0.2.94"
+backend = "aqua:nektos/act"
+specifiers = ["0.2.94"]
+
+[tools."aqua:nektos/act"."platforms.linux-arm64"]
+checksum = "sha256:d6376316eb1d82fbe693b097d60a2199b923f3c3d14d79e749130cf93dddff00"
+checksum_source = "mise-versions"
+url = "https://github.com/nektos/act/releases/download/v0.2.94/act_Linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/nektos/act/releases/assets/696297237"
+
+[tools."aqua:nektos/act"."platforms.linux-arm64-musl"]
+checksum = "sha256:d6376316eb1d82fbe693b097d60a2199b923f3c3d14d79e749130cf93dddff00"
+checksum_source = "mise-versions"
+url = "https://github.com/nektos/act/releases/download/v0.2.94/act_Linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/nektos/act/releases/assets/696297237"
+
+[tools."aqua:nektos/act"."platforms.linux-x64"]
+checksum = "sha256:33e6748e3c07affb6855f19fb7a28bc6c344c1d0888fae0564e6d34d4a71915a"
+checksum_source = "mise-versions"
+url = "https://github.com/nektos/act/releases/download/v0.2.94/act_Linux_x86_64.tar.gz"
+url_api = "https://api.github.com/repos/nektos/act/releases/assets/696297200"
+
+[tools."aqua:nektos/act"."platforms.linux-x64-musl"]
+checksum = "sha256:33e6748e3c07affb6855f19fb7a28bc6c344c1d0888fae0564e6d34d4a71915a"
+checksum_source = "mise-versions"
+url = "https://github.com/nektos/act/releases/download/v0.2.94/act_Linux_x86_64.tar.gz"
+url_api = "https://api.github.com/repos/nektos/act/releases/assets/696297200"
+
+[tools."aqua:nektos/act"."platforms.macos-arm64"]
+checksum = "sha256:1dd0997a18ec872f3164b716605b950e61264332437e5e5977479ffeeb2a683f"
+checksum_source = "mise-versions"
+url = "https://github.com/nektos/act/releases/download/v0.2.94/act_Darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/nektos/act/releases/assets/696297201"
+
+[tools."aqua:nektos/act"."platforms.macos-x64"]
+checksum = "sha256:0843730c8b201e914798d3f00e7f4fca3bcbcf1818370f238056dae611c85dd5"
+checksum_source = "mise-versions"
+url = "https://github.com/nektos/act/releases/download/v0.2.94/act_Darwin_x86_64.tar.gz"
+url_api = "https://api.github.com/repos/nektos/act/releases/assets/696297197"
+
+[tools."aqua:nektos/act"."platforms.windows-x64"]
+checksum = "sha256:ad6910dc0d16c1550854a67a1ae9404afe9f1b5f262480252135089dcc07305b"
+checksum_source = "mise-versions"
+url = "https://github.com/nektos/act/releases/download/v0.2.94/act_Windows_x86_64.zip"
+url_api = "https://api.github.com/repos/nektos/act/releases/assets/696297270"
+
 [[tools."aqua:oxc-project/oxc/oxfmt"]]
 version = "0.75.0"
 backend = "aqua:oxc-project/oxc/oxfmt"
@@ -425,3 +472,44 @@ checksum = "sha256:e14e961dd6efd626d0d0d0a74914047c72913d4194495b561171516d3ed13
 checksum_source = "mise-versions"
 url = "https://github.com/goss-org/goss/releases/download/v0.4.10/dcgoss"
 url_api = "https://api.github.com/repos/goss-org/goss/releases/assets/490586487"
+
+[[tools."github:liamg/comet"]]
+version = "0.0.5"
+backend = "github:liamg/comet"
+specifiers = ["0.0.5"]
+
+[tools."github:liamg/comet"."platforms.linux-arm64"]
+checksum = "sha256:f2e718907d4de1735d5e499c786a8dae7e377fa0013abcc952084e154ccfc68b"
+checksum_source = "mise-versions"
+url = "https://github.com/liamg/comet/releases/download/v0.0.5/comet-linux-arm64"
+url_api = "https://api.github.com/repos/liamg/comet/releases/assets/60592196"
+
+[tools."github:liamg/comet"."platforms.linux-arm64-musl"]
+checksum = "sha256:f2e718907d4de1735d5e499c786a8dae7e377fa0013abcc952084e154ccfc68b"
+checksum_source = "mise-versions"
+url = "https://github.com/liamg/comet/releases/download/v0.0.5/comet-linux-arm64"
+url_api = "https://api.github.com/repos/liamg/comet/releases/assets/60592196"
+
+[tools."github:liamg/comet"."platforms.linux-x64"]
+checksum = "sha256:319a63d4c879d27ed21cb522d7d7db5bf6493e2b72af93bff90ad5c542f5e985"
+checksum_source = "mise-versions"
+url = "https://github.com/liamg/comet/releases/download/v0.0.5/comet-linux-amd64"
+url_api = "https://api.github.com/repos/liamg/comet/releases/assets/60592193"
+
+[tools."github:liamg/comet"."platforms.linux-x64-musl"]
+checksum = "sha256:319a63d4c879d27ed21cb522d7d7db5bf6493e2b72af93bff90ad5c542f5e985"
+checksum_source = "mise-versions"
+url = "https://github.com/liamg/comet/releases/download/v0.0.5/comet-linux-amd64"
+url_api = "https://api.github.com/repos/liamg/comet/releases/assets/60592193"
+
+[tools."github:liamg/comet"."platforms.macos-arm64"]
+checksum = "sha256:50c07b4cc85979541956835906e513fb421e69875e48193fe26361773a3e438a"
+checksum_source = "mise-versions"
+url = "https://github.com/liamg/comet/releases/download/v0.0.5/comet-darwin-arm64"
+url_api = "https://api.github.com/repos/liamg/comet/releases/assets/60592185"
+
+[tools."github:liamg/comet"."platforms.macos-x64"]
+checksum = "sha256:f0b8eee36c3a6af89f095ef971d8f9135f574ecc61bceab2549edb01c43c26a1"
+checksum_source = "mise-versions"
+url = "https://github.com/liamg/comet/releases/download/v0.0.5/comet-darwin-amd64"
+url_api = "https://api.github.com/repos/liamg/comet/releases/assets/60592187"

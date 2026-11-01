@@ -1,5 +1,5 @@
-# CI tooling of this repository, pinned so that the CI and local runs use the same versions; Renovate updates the pins
-# and mise.lock records their checksums. Run `mise install` once, then `mise tasks` to list all tasks.
+# Tooling and tasks of this repository. The tools are pinned so that the CI and local runs use the same versions; Renovate
+# updates the pins and mise.lock records their checksums. Run `mise run init` once, then `mise tasks` to list all tasks.
 
 [tools]
 "aqua:rhysd/actionlint" = "1.7.12"
@@ -11,15 +11,59 @@
 "github:goss-org/goss" = { version = "0.4.10", asset_pattern = "dcgoss", bin = "dcgoss" }
 # local development only, the CI does not install them
 "aqua:evilmartians/lefthook" = "2.2.2" # git hooks (lefthook.yml)
-"aqua:oxc-project/oxc/oxfmt" = "0.75.0" # formatter used by `just format` (.oxfmtrc.json)
+"aqua:oxc-project/oxc/oxfmt" = "0.75.0" # formatter (.oxfmtrc.json)
 "aqua:cli/cli" = "2.103.3" # gh
+"aqua:nektos/act" = "0.2.94" # runs the GitHub Actions workflows locally (.actrc)
+"github:liamg/comet" = "0.0.5" # assisted conventional commits
 
 [settings]
 lockfile = true
 
+[tasks.init]
+description = "Install the tools and the git hooks"
+alias = "initialize"
+run = ["mise install", "lefthook install"]
+
+# snapcraft and multipass are no mise tools, so brew installs them
+[tasks."install:snap"]
+description = "Install snapcraft and multipass to build the snaps (macOS only)"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ "$(uname -s)" != "Darwin" ]]; then
+  echo "This task works only on macOS; on other systems install snapcraft and multipass manually" >&2
+  exit 1
+fi
+export HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_INSECURE_REDIRECT=1 HOMEBREW_CASK_OPTS=--require-sha
+brew install snapcraft
+brew install --cask multipass
+'''
+
+[tasks."uninstall:snap"]
+description = "Uninstall snapcraft and multipass (macOS only)"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ "$(uname -s)" != "Darwin" ]]; then
+  echo "This task works only on macOS; on other systems uninstall snapcraft and multipass manually" >&2
+  exit 1
+fi
+brew uninstall snapcraft
+brew uninstall --cask multipass
+'''
+
+[tasks.format]
+description = "Format the given files, or all files without arguments"
+alias = "fmt"
+run = "oxfmt"
+
 [tasks.check]
 description = "Run all checks"
 depends = ["check:*"]
+
+[tasks."check:format"]
+description = "Check the formatting of the given files, or all files without arguments"
+run = "oxfmt --check"
 
 [tasks."check:actions"]
 description = "Lint the GitHub Actions workflows, lint and test the CI scripts"
@@ -29,3 +73,43 @@ run = [
   "shfmt --diff .github/scripts/*.sh",
   "bash .github/scripts/test-ci-gate.sh",
 ]
+
+[tasks.commit]
+description = "Assisted conventional commits with git"
+alias = "cm"
+run = "comet"
+
+[tasks.ci]
+description = "Run the GitHub Actions workflows locally; the arguments go to act (default event: push)"
+run = "act"
+
+[tasks."snap:build"]
+description = "Build the snap of the given package"
+alias = "snap"
+usage = 'arg "<package>" help="directory in snaps/"'
+# with --debug, snapcraft opens a shell in the build environment on errors
+run = 'cd "snaps/${usage_package:?}" && snapcraft --debug'
+
+[tasks."snap:login-token"]
+description = "Create the login token to push releases of all snaps to the snapcraft store"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+SNAPS=$(ls -m snaps | tr -d ' ')
+snapcraft export-login --snaps="$SNAPS" --acls="package_access,package_push,package_update,package_release" .login_token.txt
+'''
+
+[tasks."docker:build"]
+description = "Build the Docker image of the given package as local-build_<package>"
+alias = "docker"
+usage = '''
+arg "<package>" help="directory in docker/"
+arg "[args]..." var=#true help="additional arguments for docker build"
+'''
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+eval "set -- ${usage_args-}"
+cd "docker/${usage_package:?}"
+docker build "$@" -t "local-build_${usage_package}" .
+'''
