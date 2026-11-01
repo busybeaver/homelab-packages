@@ -1,6 +1,6 @@
 extends:
   - .lefthook/lefthook-commit-message.yml
-  - .lefthook/lefthook-dprint.yml
+  - .lefthook/lefthook-oxfmt.yml
 
 pre-commit:
   commands:

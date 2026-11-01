@@ -37,34 +37,26 @@ Some scripts that automate frequently conducted tasks.
 
 ## Setup
 
-On macOS run the following command to install just:
+The tooling and the tasks of this repository are defined in [`mise.toml`](mise.toml); the tools are locked with their
+checksums in [`mise.lock`](mise.lock). Install [mise](https://mise.jdx.dev) (on macOS: `brew install mise`), then set up
+the repository:
 
 ```shell
-brew install just
+# installs the tools and the git hooks
+mise run init
+# only to build the snaps: installs snapcraft and multipass with brew (macOS only; on other operating systems install
+# these manually)
+mise run install:snap
 ```
 
-For other operating systems, have a look at the installation section in the [just documentation](https://github.com/casey/just/tree/df8eabb3ef705e0807b863db2a0c99061f691bbe#packages=).
-
-Subsequently, set up the repository:
-
-```shell
-# 1) install the required tooling: the install step uses brew and therefore works only on macos;
-# on other operation systems check the needed tools in the justfile.shared and install these manually
-just install
-# 2) initialize the tooling
-just init
-```
-
-The CI tools (actionlint, shellcheck, goss) are pinned in [`mise.toml`](mise.toml) and locked with their checksums in
-[`mise.lock`](mise.lock). Install [mise](https://mise.jdx.dev) (`brew install mise`) and run `mise install`; the
-pre-commit hook runs `mise run check:actions` for changed workflows.
+The pre-commit hook formats the changed files with oxfmt and runs `mise run check:actions` for changed workflows.
 
 ## Development
 
-For a list of available commands, just run `just` within the Git repository. `mise run check` lints the workflows and
-tests the CI scripts.
+For a list of available tasks, run `mise tasks` within the Git repository. `mise run check` checks the formatting, lints
+the workflows and tests the CI scripts.
 
 Pull requests merge only with green required checks; `CI Gate` aggregates the jobs of the Docker CI, so its matrix can
 change without touching the branch protection.
 
-Use [act](https://github.com/nektos/act) to run the GitHub Actions CI flow locally.
+`mise run ci` runs the GitHub Actions CI flow locally with [act](https://github.com/nektos/act).

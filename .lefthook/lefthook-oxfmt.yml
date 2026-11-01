@@ -1,0 +1,8 @@
+pre-commit:
+  parallel: true
+  commands:
+    format:
+      # oxfmt does not format Dockerfiles; YAML and JSON5 are excluded in .oxfmtrc.json
+      glob: "{*.ts,*.tsx,*.js,*.jsx,*.cjs,*.mjs,*.json,*.md,*.toml}"
+      exclude: ".*-lock\\.json$"
+      run: mise run format {staged_files} && git add {staged_files}
