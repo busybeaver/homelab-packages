@@ -1,0 +1,58 @@
+name: 'Scripts Test CI'
+
+on:
+  # run on pushes to main
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/**'
+      - 'tests/**'
+      - '.github/workflows/scripts_test.yaml'
+  # run on pull requests that target the main branch
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'scripts/**'
+      - 'tests/**'
+      - '.github/workflows/scripts_test.yaml'
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.ref == 'refs/heads/main' && format('ci-main-{0}-{1}', github.workflow, github.sha) || format('ci-{0}-{1}', github.workflow, github.ref) }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  scripts_test:
+    name: 'Test Scripts'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: StepSecurity - Harden Github-hosted Runners
+        uses: step-security/harden-runner@fe104658747b27e96e4f7e80cd0a94068e53901d # v2.16.1
+        with:
+          egress-policy: block
+          disable-telemetry: true
+          disable-sudo: true
+          allowed-endpoints: >
+            github.com:443
+
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Test - download_docker_compose.sh
+        id: test_download_docker_compose
+        run: bash tests/download_docker_compose_test.sh
