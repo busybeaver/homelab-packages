@@ -6,8 +6,9 @@ on:
     branches:
       - main
       - gh-readonly-queue/main/**
-  # run on pull request events
-  pull_request_target:
+  # run on pull request events; pull_request_target provides the app secrets to the PRs of Renovate and forks; the
+  # reusable workflow only reads the PR metadata through the API and never checks out or runs the code of the PR
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
     types:
       - opened
       - synchronize

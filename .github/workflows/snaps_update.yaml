@@ -52,12 +52,13 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Build Matrix - Setup
         id: set_matrix
         run: |
           {
-            echo "matrix=$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
+            echo "matrix=$(find . -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | jq --raw-input --null-input --compact-output '[inputs]')"
             echo "snap_working_dir=./snaps"
           } >> "$GITHUB_OUTPUT"
 
@@ -95,31 +96,24 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 1
+          # the Create Pull Request step authenticates with the app token itself
+          persist-credentials: false
 
       - name: yq - Setup
         id: yq_setup
         uses: mikefarah/yq@0f4fb8d35ec1a939d78dd6862f494d19ec589f19 # v4.52.5
 
-      - name: Python - Setup
-        id: python_setup
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: '3.12.13'
-          cache: 'pip'
-          cache-dependency-path: '.github/workflows/snaps_update.pip'
-
-      - name: Python - Install Dependencies
-        id: python_pip_install
-        run: |
-          python3 -m pip install -r .github/workflows/snaps_update.pip
-
       - name: GitHub - Retrieve Repository Source and Current Version
         id: github_retrieve_data
         run: |
           GIT_REPO_URL="$(yq eval --no-colors --exit-status '.website' snapcraft.yaml)"
-          export GIT_REPO_URL
-          GIT_ORG="$(python3 -c 'import os; from giturlparse import parse; print(parse(os.getenv("GIT_REPO_URL")).owner)')"
-          GIT_REPO="$(python3 -c 'import os; from giturlparse import parse; print(parse(os.getenv("GIT_REPO_URL")).repo)')"
+          # owner and name of the GitHub repository, e.g. https://github.com/hashicorp/consul.git
+          if [[ ! "$GIT_REPO_URL" =~ ^https://github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)$ ]]; then
+            echo "::error::The website of the snapcraft.yaml is no GitHub repository URL: $GIT_REPO_URL"
+            exit 1
+          fi
+          GIT_ORG="${BASH_REMATCH[1]}"
+          GIT_REPO="${BASH_REMATCH[2]%.git}"
 
           {
             echo "used_version=$(yq eval --no-colors --exit-status '.version' snapcraft.yaml)"
@@ -139,18 +133,23 @@ jobs:
 
       - name: GitHub - Compare and Process Versions
         id: github_evaluate_data
+        env:
+          USED_VERSION: ${{ steps.github_retrieve_data.outputs.used_version }}
+          LATEST_RELEASE: ${{ steps.github_latest_version.outputs.release }}
         run: |
-          USED_VERSION="${{ steps.github_retrieve_data.outputs.used_version }}"
-          LATEST_VERSION="$(python3 -c 'print("${{ steps.github_latest_version.outputs.release }}".lstrip("v"))')"
+          LATEST_VERSION="${LATEST_RELEASE#v}"
+          export LATEST_VERSION
           echo "Used Version: $USED_VERSION"
           echo "Latest Version: $LATEST_VERSION"
 
-          export USED_VERSION
-          export LATEST_VERSION
-          SEMVER_COMPARE="$(python3 -c 'import os; import semver; print(semver.compare(os.getenv("USED_VERSION"),os.getenv("LATEST_VERSION")))')"
+          SEMVER_REGEX='^[0-9]+\.[0-9]+\.[0-9]+$'
+          if [[ ! "$USED_VERSION" =~ $SEMVER_REGEX || ! "$LATEST_VERSION" =~ $SEMVER_REGEX ]]; then
+            echo "::error::The versions are no MAJOR.MINOR.PATCH versions"
+            exit 1
+          fi
 
-          # a value of minus one means the first version (parameter) [used version] is lower second version (parameter) [current version] according to semver
-          if [[ "$SEMVER_COMPARE" == "-1" ]]; then
+          # the used version is lower than the latest version if they differ and the used version sorts first
+          if [[ "$USED_VERSION" != "$LATEST_VERSION" && "$(printf '%s\n' "$USED_VERSION" "$LATEST_VERSION" | sort --version-sort | head -n 1)" == "$USED_VERSION" ]]; then
             echo "Newer version available, going to update the snapcraft.yaml file to version $LATEST_VERSION and create/update the PR."
             yq eval --no-colors --exit-status --inplace '.version = strenv(LATEST_VERSION)' snapcraft.yaml
             echo "version_updated=true" >> "$GITHUB_OUTPUT"
@@ -167,6 +166,9 @@ jobs:
         with:
           app-id: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_ID }}
           private-key: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_PRIVATE_KEY }}
+          # pushes the update branch and creates/updates the PR
+          permission-contents: write
+          permission-pull-requests: write
 
       - name: GitHub - Setup GPG Keys
         id: github_setup_gpg

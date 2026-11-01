@@ -64,6 +64,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -114,6 +115,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -159,6 +161,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Snapcraft - Set up Build Environment
         id: snapcraft_setup
@@ -218,6 +221,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: GitHub - Download Snap Artifact
         id: github_download
@@ -231,6 +235,8 @@ jobs:
 
       - name: Snapcraft - Get Snap Build Information
         id: snapcraft_build_information
+        env:
+          DOWNLOAD_PATH: ${{ steps.github_download.outputs.download-path }}
         run: |
           NAME=$(yq eval --no-colors --exit-status '.name' snapcraft.yaml)
           VERSION=$(yq eval --no-colors --exit-status '.version' snapcraft.yaml)
@@ -244,26 +250,29 @@ jobs:
           {
             echo "version=${VERSION}"
             echo "arch=${ARCH}"
-            echo "snap_file=${{ steps.github_download.outputs.download-path }}/${NAME}_${VERSION}_${ARCH}.snap"
+            echo "snap_file=${DOWNLOAD_PATH}/${NAME}_${VERSION}_${ARCH}.snap"
           } >> "$GITHUB_OUTPUT"
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
       - name: GitHub - Get Test Parameter
         id: test_parameter
+        env:
+          SNAP_WORKING_DIR: ${{ needs.matrix_setup.outputs.snap_working_dir }}
+          PACKAGE: ${{ matrix.package }}
         run: |
-          TEST_WORKING_DIR=${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/tests
+          TEST_WORKING_DIR="${SNAP_WORKING_DIR}/${PACKAGE}/tests"
           {
             echo "test_working_dir=${TEST_WORKING_DIR}"
             echo "test_result_file=goss_test_results.xml"
             echo "snap_logs_name=snap_logs_{0}.log"
           } >> "$GITHUB_OUTPUT"
-          mkdir -p ${TEST_WORKING_DIR}
+          mkdir -p "${TEST_WORKING_DIR}"
 
       - name: Snapcraft - Pre Test Setup
         id: snapcraft_setup
         run: |
           echo "Install snap package:"
-          sudo snap install --color=never --dangerous ${{ steps.snapcraft_build_information.outputs.snap_file }}
+          sudo snap install --color=never --dangerous "$SNAP_FILE"
           SETUP_FILE=./setup.sh
           if test -f "$SETUP_FILE"; then
             echo "$SETUP_FILE exists. Going to run setup:"
@@ -274,6 +283,7 @@ jobs:
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         env:
           SERVICE_NAME: ${{ matrix.package }}
+          SNAP_FILE: ${{ steps.snapcraft_build_information.outputs.snap_file }}
 
       - name: Goss - Setup
         uses: e1himself/goss-installation-action@3b8340a7c772f8064444f48b0df4c2a80d2e50fc # v1.3.0
@@ -289,10 +299,11 @@ jobs:
       - name: Goss - Test Artifact
         id: goss_test
         if: steps.check_test_file.outputs.files_exists == 'true'
-        run: goss validate --format junit --max-concurrent 1 | tee ${{ steps.test_parameter.outputs.test_result_file }}
+        run: goss validate --format junit --max-concurrent 1 | tee "$TEST_RESULT_FILE"
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         env:
           SERVICE_NAME: ${{ matrix.package }}
+          TEST_RESULT_FILE: ${{ steps.test_parameter.outputs.test_result_file }}
 
       - name: Snapcraft - Post Test Teardown
         id: snapcraft_teardown
@@ -335,6 +346,10 @@ jobs:
         with:
           app-id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
           private-key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
+          # adds the check run only (comment_mode: off)
+          permission-checks: write
+          permission-contents: read
+          permission-pull-requests: read
 
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
@@ -392,13 +407,16 @@ jobs:
 
       - name: Snapcraft - Get Snap Build Information
         id: snapcraft_build_information
+        env:
+          DOWNLOAD_PATH: ${{ steps.github_download.outputs.download-path }}
+          ARCH: ${{ matrix.arch }}
         run: |
           NAME=$(yq eval --no-colors --exit-status '.name' snapcraft.yaml)
           VERSION=$(yq eval --no-colors --exit-status '.version' snapcraft.yaml)
 
           {
             echo "version=${VERSION}"
-            echo "snap_file=${{ steps.github_download.outputs.download-path }}/${NAME}_${VERSION}_${{ matrix.arch }}.snap"
+            echo "snap_file=${DOWNLOAD_PATH}/${NAME}_${VERSION}_${ARCH}.snap"
           } >> "$GITHUB_OUTPUT"
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
