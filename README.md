@@ -55,8 +55,16 @@ just install
 just init
 ```
 
+The CI tools (actionlint, shellcheck, goss) are pinned in [`mise.toml`](mise.toml) and locked with their checksums in
+[`mise.lock`](mise.lock). Install [mise](https://mise.jdx.dev) (`brew install mise`) and run `mise install`; the
+pre-commit hook runs `mise run check:actions` for changed workflows.
+
 ## Development
 
-For a list of available commands, just run `just` within the git repository.
+For a list of available commands, just run `just` within the git repository. `mise run check` lints the workflows and
+tests the CI scripts.
+
+Pull requests merge only with green required checks; `CI Gate` aggregates the jobs of the Docker CI, so its matrix can
+change without touching the branch protection.
 
 Use [act](https://github.com/nektos/act) to run the GitHub Actions CI flow locally.

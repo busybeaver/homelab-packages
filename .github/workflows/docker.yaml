@@ -206,8 +206,8 @@ jobs:
       contents: read
 
     env:
-      # renovate: datasource=github-releases depName=goss-org/goss
-      GOSS_VERSION: v0.4.10
+      # renovate: datasource=github-releases depName=jdx/mise
+      MISE_VERSION: v2026.10.8
 
     steps:
       - name: StepSecurity - Harden Github-hosted Runners
@@ -261,25 +261,13 @@ jobs:
 
       - name: Goss - Setup
         id: goss_setup
-        # installs goss, dgoss and dcgoss from the goss release and verifies their checksums; goss >= v0.4.10 ships
-        # goss in a "goss_<version>_linux_x86_64.tar.gz" archive
-        run: |
-          set -Eeuo pipefail
-          base="https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}"
-          archive="goss_${GOSS_VERSION#v}_linux_x86_64.tar.gz"
-          dir="${RUNNER_TEMP}/goss"
-          mkdir -p "${dir}/bin"
-          cd "${dir}"
-          curl -fsSLO "${base}/${archive}"
-          curl -fsSL "${base}/goss_${GOSS_VERSION#v}_SHA256SUMS" | awk -v file="${archive}" '$2 == file' | sha256sum -c -
-          tar -xzf "${archive}" -C bin goss
-          for tool in dgoss dcgoss; do
-            curl -fsSL -o "bin/${tool}" "${base}/${tool}"
-            curl -fsSL "${base}/${tool}.sha256" | sed "s#  .*#  bin/${tool}#" | sha256sum -c -
-          done
-          chmod 755 bin/*
-          echo "${dir}/bin" >>"${GITHUB_PATH}"
-          bin/goss --version
+        # installs goss and dcgoss with the versions and checksums of mise.lock
+        uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # v5.2.4
+        with:
+          version: ${{ env.MISE_VERSION }}
+          install_args: aqua:goss-org/goss github:goss-org/goss
+        env:
+          MISE_LOCKED: 1
 
       - name: Docker - Setup Docker Compose (V1 Compatibility)
         run: |
@@ -301,11 +289,6 @@ jobs:
         # we use "sed '1d'" to remove the first line of the output. it contains the name of the container but we only need the XML based JUnit results
         run: DEBUG=true dcgoss run container_under_test | sed '1d' | tee ${{ steps.test_parameter.outputs.test_result_file }}
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
-        # TODO: temporary until this error is resolved:
-        # https://github.com/busybeaver/homelab-packages/actions/runs/17178559407/job/48738026593#step:12:45
-        # https://github.com/orgs/community/discussions/116610#discussioncomment-8997411
-        # https://github.blog/changelog/2024-04-10-github-hosted-runner-images-deprecation-notice-docker-compose-v1/
-        continue-on-error: true
         env:
           IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
           GOSS_OPTS: --format junit --max-concurrent 1
@@ -447,6 +430,47 @@ jobs:
         with:
           sarif_file: snyk.sarif
           category: snyk-${{ matrix.package }}
+
+  ci_gate:
+    name: 'CI Gate'
+    # the only required check of this workflow: its job names depend on the build matrix, this one does not; it must
+    # always run, since a skipped required check counts as passed
+    if: always()
+    needs: [matrix_setup, code_quality, docker_build, docker_test, container_security]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: StepSecurity - Harden Github-hosted Runners
+        uses: step-security/harden-runner@fe104658747b27e96e4f7e80cd0a94068e53901d # v2.16.1
+        with:
+          egress-policy: block
+          disable-telemetry: true
+          disable-sudo: true
+          allowed-endpoints:
+            api.stepsecurity.io:443
+            github.com:443
+
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+
+      - name: GitHub - Aggregate Job Results
+        id: ci_gate
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: bash .github/scripts/ci-gate.sh
 
   docker_publish:
     name: 'Publish'
