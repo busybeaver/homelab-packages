@@ -25,7 +25,7 @@ ARG NODE_RED_HUEMAGIC_VERSION=4.2.2
 # renovate: datasource=npm depName=node-red-node-pushover versioning=npm
 ARG NODE_RED_PUSHOVER_VERSION=0.3.1
 # renovate: datasource=npm depName=node-red-contrib-knx-ultimate versioning=npm
-ARG NODE_RED_KNX_ULTIMATE_VERSION=4.3.16
+ARG NODE_RED_KNX_ULTIMATE_VERSION=4.3.24
 # renovate: datasource=npm depName=node-red-contrib-sonos-plus versioning=npm
 ARG NODE_RED_SONOS_PLUS_VERSION=6.9.3
 # renovate: datasource=npm depName=node-red-contrib-sonos-event versioning=npm
@@ -43,7 +43,7 @@ ARG NODE_RED_NODE_PING_VERSION=0.3.3
 # renovate: datasource=npm depName=node-red-contrib-tts-ultimate versioning=npm
 ARG NODE_RED_TTS_ULTIMATE_VERSION=3.0.7
 # renovate: datasource=npm depName=node-red-contrib-homeconnect versioning=npm
-ARG NODE_RED_HOMECONNECT_VERSION=0.6.7
+ARG NODE_RED_HOMECONNECT_VERSION=0.6.8
 # renovate: datasource=npm depName=node-red-contrib-credentials versioning=npm
 ARG NODE_RED_CREDENTIALS_VERSION=0.2.3
 # renovate: datasource=npm depName=node-red-contrib-feiertage-germany versioning=npm
