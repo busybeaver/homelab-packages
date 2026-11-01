@@ -9,6 +9,10 @@
 # goss tests the Docker images; dcgoss is a script in the same release, so both pins must stay on the same version
 "aqua:goss-org/goss" = "0.4.10"
 "github:goss-org/goss" = { version = "0.4.10", asset_pattern = "dcgoss", bin = "dcgoss" }
+# local development only, the CI does not install them
+"aqua:evilmartians/lefthook" = "2.2.2" # git hooks (lefthook.yml)
+"aqua:oxc-project/oxc/oxfmt" = "0.75.0" # formatter used by `just format` (.oxfmtrc.json)
+"aqua:cli/cli" = "2.103.3" # gh
 
 [settings]
 lockfile = true

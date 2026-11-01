@@ -1,4 +1,4 @@
-default_tools := "just lefthook dprint act wget earthly"
+default_tools := "just lefthook act wget earthly"
 brew_env_vars := "HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_INSECURE_REDIRECT=1 HOMEBREW_CASK_OPTS=--require-sha"
 
 # install all required tooling for development (osx only); the optional additional_tools parameter allows to specify additional tools that should be installed
@@ -51,11 +51,11 @@ initialize:
 
 # formats files according to the used standards and rules; if the optional files parameter is provided, only the specified files are formatted; else all files are formatted
 format *files:
-  dprint fmt {{files}}
+  oxfmt {{files}}
 
 # checks if the files comply to the used standards and rules; if the optional files parameter is provided, only the specified files are checked; else all files are checked
 check *files:
-  dprint check {{files}}
+  oxfmt --check {{files}}
 
 # assisted conventional commits with git
 commit *args:

@@ -2,8 +2,7 @@ pre-commit:
   parallel: true
   commands:
     format:
-      # since dprint currently has some issues with formatting Dockerfiles, we don't do it during pre-commit
-      # glob: "{Dockerfile,*.ts,*.tsx,*.js,*.jsx,*.cjs,*.mjs,*.json,*.md,*.toml}"
+      # oxfmt does not format Dockerfiles; YAML and JSON5 are excluded in .oxfmtrc.json
       glob: "{*.ts,*.tsx,*.js,*.jsx,*.cjs,*.mjs,*.json,*.md,*.toml}"
       exclude: ".*-lock\\.json$"
       run: just format {staged_files} && git add {staged_files}
