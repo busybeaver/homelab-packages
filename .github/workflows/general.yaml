@@ -27,10 +27,9 @@ jobs:
     permissions:
       contents: read
       statuses: write
-    timeout-minutes: 30
     uses: busybeaver/homelab-shared/.github/workflows/general.yaml@119b6300c04cb0596b6f9ebf10c5eb44cd1d473f # v1.1.146
     with:
       lintDocker: true
-      filterRegexExlude: .*\.github\/linters\/.*
+      filterRegexExclude: .*\.github\/linters\/.*
     secrets:
       GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}

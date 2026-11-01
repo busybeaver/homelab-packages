@@ -261,9 +261,25 @@ jobs:
 
       - name: Goss - Setup
         id: goss_setup
-        uses: e1himself/goss-installation-action@3b8340a7c772f8064444f48b0df4c2a80d2e50fc # v1.3.0
-        with:
-          version: ${{ env.GOSS_VERSION }}
+        # installs goss, dgoss and dcgoss from the goss release and verifies their checksums; goss >= v0.4.10 ships
+        # goss in a "goss_<version>_linux_x86_64.tar.gz" archive
+        run: |
+          set -Eeuo pipefail
+          base="https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}"
+          archive="goss_${GOSS_VERSION#v}_linux_x86_64.tar.gz"
+          dir="${RUNNER_TEMP}/goss"
+          mkdir -p "${dir}/bin"
+          cd "${dir}"
+          curl -fsSLO "${base}/${archive}"
+          curl -fsSL "${base}/goss_${GOSS_VERSION#v}_SHA256SUMS" | awk -v file="${archive}" '$2 == file' | sha256sum -c -
+          tar -xzf "${archive}" -C bin goss
+          for tool in dgoss dcgoss; do
+            curl -fsSL -o "bin/${tool}" "${base}/${tool}"
+            curl -fsSL "${base}/${tool}.sha256" | sed "s#  .*#  bin/${tool}#" | sha256sum -c -
+          done
+          chmod 755 bin/*
+          echo "${dir}/bin" >>"${GITHUB_PATH}"
+          bin/goss --version
 
       - name: Docker - Setup Docker Compose (V1 Compatibility)
         run: |
