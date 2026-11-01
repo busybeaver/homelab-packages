@@ -4,6 +4,7 @@
 [tools]
 "aqua:rhysd/actionlint" = "1.7.12"
 "aqua:koalaman/shellcheck" = "0.11.0" # also used by actionlint for `run:` scripts
+"aqua:mvdan/sh" = "3.14.1" # shfmt
 "aqua:jqlang/jq" = "1.8.2" # used by the CI Gate (.github/scripts/ci-gate.sh)
 # goss tests the Docker images; dcgoss is a script in the same release, so both pins must stay on the same version
 "aqua:goss-org/goss" = "0.4.10"
@@ -17,5 +18,10 @@ description = "Run all checks"
 depends = ["check:*"]
 
 [tasks."check:actions"]
-description = "Lint the GitHub Actions workflows and test the CI scripts"
-run = ["actionlint", "shellcheck .github/scripts/*.sh", "bash .github/scripts/test-ci-gate.sh"]
+description = "Lint the GitHub Actions workflows, lint and test the CI scripts"
+run = [
+  "actionlint",
+  "shellcheck .github/scripts/*.sh",
+  "shfmt --diff .github/scripts/*.sh",
+  "bash .github/scripts/test-ci-gate.sh",
+]

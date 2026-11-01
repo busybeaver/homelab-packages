@@ -61,7 +61,7 @@ pre-commit hook runs `mise run check:actions` for changed workflows.
 
 ## Development
 
-For a list of available commands, just run `just` within the git repository. `mise run check` lints the workflows and
+For a list of available commands, just run `just` within the Git repository. `mise run check` lints the workflows and
 tests the CI scripts.
 
 Pull requests merge only with green required checks; `CI Gate` aggregates the jobs of the Docker CI, so its matrix can

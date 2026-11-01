@@ -11,8 +11,8 @@ fi
 failed=()
 while IFS='=' read -r job result; do
   case "${result}" in
-    success | skipped) ;;
-    *) failed+=("${job} (${result})") ;;
+  success | skipped) ;;
+  *) failed+=("${job} (${result})") ;;
   esac
 done <<<"${results}"
 
