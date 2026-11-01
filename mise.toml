@@ -1,0 +1,27 @@
+# CI tooling of this repository, pinned so that the CI and local runs use the same versions; Renovate updates the pins
+# and mise.lock records their checksums. Run `mise install` once, then `mise tasks` to list all tasks.
+
+[tools]
+"aqua:rhysd/actionlint" = "1.7.12"
+"aqua:koalaman/shellcheck" = "0.11.0" # also used by actionlint for `run:` scripts
+"aqua:mvdan/sh" = "3.14.1" # shfmt
+"aqua:jqlang/jq" = "1.8.2" # used by the CI Gate (.github/scripts/ci-gate.sh)
+# goss tests the Docker images; dcgoss is a script in the same release, so both pins must stay on the same version
+"aqua:goss-org/goss" = "0.4.10"
+"github:goss-org/goss" = { version = "0.4.10", asset_pattern = "dcgoss", bin = "dcgoss" }
+
+[settings]
+lockfile = true
+
+[tasks.check]
+description = "Run all checks"
+depends = ["check:*"]
+
+[tasks."check:actions"]
+description = "Lint the GitHub Actions workflows, lint and test the CI scripts"
+run = [
+  "actionlint",
+  "shellcheck .github/scripts/*.sh",
+  "shfmt --diff .github/scripts/*.sh",
+  "bash .github/scripts/test-ci-gate.sh",
+]

@@ -1,3 +1,10 @@
 extends:
   - .lefthook/lefthook-commit-message.yml
   - .lefthook/lefthook-dprint.yml
+
+pre-commit:
+  commands:
+    # lints the workflows before they reach the CI; the tools come from mise.toml
+    actions:
+      glob: "{.github/workflows/*.{yml,yaml},.github/scripts/*.sh,mise.toml}"
+      run: mise run check:actions

@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1@sha256:ecfaec9ed6d810b56388c508f4121597bfbba70d41a6dfeee4d8cad5f295fc32
+# syntax=docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
 FROM public.ecr.aws/lts/ubuntu:24.04@sha256:22a8228e1e48cbe7e0e0f2056e752ffb8a35950cda150a4e5e16417200bec648 as build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -68,7 +68,7 @@ ARG HOMEBRIDGE_DELAY_SWITCH_VERSION=3.2.5
 # renovate: datasource=npm depName=homebridge-camera-ffmpeg versioning=npm
 ARG HOMEBRIDGE_CAMERA_FFMPEG_VERSION=3.1.4
 # renovate: datasource=npm depName=homebridge-dyson-pure-cool versioning=npm
-ARG HOMEBRIDGE_DYSON_PURE_COOL_VERSION=2.9.2
+ARG HOMEBRIDGE_DYSON_PURE_COOL_VERSION=2.9.5
 
 # hadolint ignore=SC1091
 RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CACHE_FOLDER}" \
