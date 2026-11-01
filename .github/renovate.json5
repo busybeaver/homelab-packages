@@ -6,6 +6,14 @@
     "docker:enableMajor",
     "regexManagers:dockerfileVersions",
   ],
+  // supply-chain cooldown: an update waits until its release is 3 days old; with "strict" internal checks, Renovate
+  // creates no branch (and no CI run with the new dependency) before that; the shared preset sets the age per update
+  // type (minor/patch/digest 3 days, major 5 days), this default covers all other update types
+  "minimumReleaseAge": "3 days",
+  "internalChecksFilter": "strict",
+  // the shared preset enables rollback PRs; they proposed downgrades whenever a datasource no longer listed a pinned
+  // version (e.g. #1616, #1624)
+  "rollbackPrs": false,
   "pip_requirements": {
     // https://docs.renovatebot.com/python/#alternative-file-names
     "fileMatch": [
@@ -28,6 +36,13 @@
     }
   ],
     "packageRules": [
+    {
+      "description": "goss and dcgoss come from the same release (mise.toml)",
+      "groupName": "goss",
+      "matchPackageNames": [
+        "goss-org/goss"
+      ]
+    },
     {
       "groupName": "Caddy Docker containers",
       "matchDatasources": [
