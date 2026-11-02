@@ -56,6 +56,7 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -119,6 +120,7 @@ jobs:
         with:
           # super-linter requires the full git history to correctly identify changed files
           fetch-depth: 0
+          persist-credentials: false
 
       - name: SuperLinter - Lint Dockerfile
         id: superlinter_scan
@@ -128,7 +130,6 @@ jobs:
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           FILTER_REGEX_INCLUDE: .*${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/.*
           VALIDATE_ALL_CODEBASE: ${{ github.event_name != 'pull_request' }}
-          VALIDATE_DOCKERFILE: true # dockerfilelint
           VALIDATE_DOCKERFILE_HADOLINT: true # hadolint
 
   docker_build:
@@ -161,6 +162,7 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Docker - Set-Up Environment
         id: docker_setup
@@ -222,6 +224,7 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
@@ -232,18 +235,23 @@ jobs:
 
       - name: GitHub - Get Test Parameter
         id: test_parameter
+        env:
+          DOCKER_WORKING_DIR: ${{ needs.matrix_setup.outputs.docker_working_dir }}
+          PACKAGE: ${{ matrix.package }}
         run: |
-          TEST_WORKING_DIR="${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/tests"
+          TEST_WORKING_DIR="${DOCKER_WORKING_DIR}/${PACKAGE}/tests"
           {
             echo "test_working_dir=${TEST_WORKING_DIR}"
             echo "test_result_file=goss_test_results.xml"
             echo "container_logs_name=container_logs_{0}.log"
           } >> "$GITHUB_OUTPUT"
-          mkdir -p ${TEST_WORKING_DIR}
+          mkdir -p "${TEST_WORKING_DIR}"
 
       - name: Docker - Load Image
         id: docker_load
-        run: docker image load --input ${{ needs.matrix_setup.outputs.docker_image_file }} && docker images
+        env:
+          DOCKER_IMAGE_FILE: ${{ needs.matrix_setup.outputs.docker_image_file }}
+        run: docker image load --input "$DOCKER_IMAGE_FILE" && docker images
 
       - name: Docker - Pre Test Setup
         id: docker_setup
@@ -287,9 +295,10 @@ jobs:
         # the service/container to test needs to be called "container_under_test" in the docker-compose.yaml file;
         # it's important to set DEBUG=true, else will the docker container logs be deleted after running the tests;
         # we use "sed '1d'" to remove the first line of the output. it contains the name of the container but we only need the XML based JUnit results
-        run: DEBUG=true dcgoss run container_under_test | sed '1d' | tee ${{ steps.test_parameter.outputs.test_result_file }}
+        run: DEBUG=true dcgoss run container_under_test | sed '1d' | tee "$TEST_RESULT_FILE"
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         env:
+          TEST_RESULT_FILE: ${{ steps.test_parameter.outputs.test_result_file }}
           IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
           GOSS_OPTS: --format junit --max-concurrent 1
           GOSS_SLEEP: 30s
@@ -339,6 +348,10 @@ jobs:
         with:
           app-id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
           private-key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
+          # adds the check run only (comment_mode: off)
+          permission-checks: write
+          permission-contents: read
+          permission-pull-requests: read
 
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
@@ -384,6 +397,7 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
@@ -394,7 +408,9 @@ jobs:
 
       - name: Docker - Load Image
         id: docker_load
-        run: docker image load --input ${{ needs.matrix_setup.outputs.docker_image_file }} && docker images
+        env:
+          DOCKER_IMAGE_FILE: ${{ needs.matrix_setup.outputs.docker_image_file }}
+        run: docker image load --input "$DOCKER_IMAGE_FILE" && docker images
 
       - name: Snyk - Check for Docker Image Vulnerabilities
         id: snyk_scan
@@ -510,6 +526,7 @@ jobs:
         with:
           # required by tj-actions/changed-files to correctly identify changed files
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Git - Get Changed Files
         id: git_changed_files
@@ -529,7 +546,9 @@ jobs:
       - name: Docker - Load Image
         id: docker_load
         if: steps.git_changed_files.outputs.any_changed == 'true'
-        run: docker image load --input ${{ needs.matrix_setup.outputs.docker_image_file }}
+        env:
+          DOCKER_IMAGE_FILE: ${{ needs.matrix_setup.outputs.docker_image_file }}
+        run: docker image load --input "$DOCKER_IMAGE_FILE"
 
       - name: Docker - Log into Registry ${{ needs.matrix_setup.outputs.docker_registry }}
         id: docker_login
@@ -543,10 +562,14 @@ jobs:
       - name: Docker - Publish Artifact
         id: docker_publish
         if: steps.git_changed_files.outputs.any_changed == 'true'
+        env:
+          IMAGE_GIT_TAG: ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }}
+          IMAGE_DATE: ${{ format(needs.matrix_setup.outputs.image_name_date, matrix.package) }}
+          IMAGE_LATEST: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
         run: |
-          docker image push ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }}
-          docker image push ${{ format(needs.matrix_setup.outputs.image_name_date, matrix.package) }}
-          docker image push ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
+          docker image push "$IMAGE_GIT_TAG"
+          docker image push "$IMAGE_DATE"
+          docker image push "$IMAGE_LATEST"
 
       - name: Cosign - Setup
         id: cosign_setup
@@ -559,23 +582,18 @@ jobs:
         id: cosign_sign
         if: steps.git_changed_files.outputs.any_changed == 'true'
         run: |
-          GIT_TAG_IMAGE="$(docker inspect --format='{{index .RepoDigests 0}}' ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }})"
-          cosign sign \
-            --key env://COSIGN_PRIVATE_KEY \
-            --yes \
-            --annotations "repo=${{ github.repository }}" \
-            --annotations "workflow=${{ github.workflow }}" \
-            --annotations "ref=${{ github.sha }}" \
-            "${GIT_TAG_IMAGE}"
-
-          DATE_IMAGE="$(docker inspect --format='{{index .RepoDigests 0}}' ${{ format(needs.matrix_setup.outputs.image_name_date, matrix.package) }})"
-          cosign sign \
-            --key env://COSIGN_PRIVATE_KEY \
-            --yes \
-            --annotations "repo=${{ github.repository }}" \
-            --annotations "workflow=${{ github.workflow }}" \
-            --annotations "ref=${{ github.sha }}" \
-            "${DATE_IMAGE}"
+          for IMAGE in "$IMAGE_GIT_TAG" "$IMAGE_DATE"; do
+            IMAGE_DIGEST="$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE")"
+            cosign sign \
+              --key env://COSIGN_PRIVATE_KEY \
+              --yes \
+              --annotations "repo=${GITHUB_REPOSITORY}" \
+              --annotations "workflow=${GITHUB_WORKFLOW}" \
+              --annotations "ref=${GITHUB_SHA}" \
+              "${IMAGE_DIGEST}"
+          done
         env:
+          IMAGE_GIT_TAG: ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }}
+          IMAGE_DATE: ${{ format(needs.matrix_setup.outputs.image_name_date, matrix.package) }}
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
