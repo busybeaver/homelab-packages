@@ -64,7 +64,7 @@ ARG HOMEBRIDGE_HOMECONNECT_VERSION=1.7.0
 # renovate: datasource=npm depName=homebridge-dummy versioning=npm
 ARG HOMEBRIDGE_DUMMY_VERSION=1.8.1
 # renovate: datasource=npm depName=homebridge-delay-switch versioning=npm
-ARG HOMEBRIDGE_DELAY_SWITCH_VERSION=3.2.5
+ARG HOMEBRIDGE_DELAY_SWITCH_VERSION=3.3.1
 # renovate: datasource=npm depName=homebridge-camera-ffmpeg versioning=npm
 ARG HOMEBRIDGE_CAMERA_FFMPEG_VERSION=3.1.4
 # renovate: datasource=npm depName=homebridge-dyson-pure-cool versioning=npm
