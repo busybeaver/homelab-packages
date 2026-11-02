@@ -23,11 +23,11 @@ ARG NODE_RED_HOMEKIT_BRIDGED_VERSION=1.7.3
 # renovate: datasource=npm depName=node-red-contrib-huemagic versioning=npm
 ARG NODE_RED_HUEMAGIC_VERSION=4.2.2
 # renovate: datasource=npm depName=node-red-node-pushover versioning=npm
-ARG NODE_RED_PUSHOVER_VERSION=0.3.1
+ARG NODE_RED_PUSHOVER_VERSION=0.3.2
 # renovate: datasource=npm depName=node-red-contrib-knx-ultimate versioning=npm
 ARG NODE_RED_KNX_ULTIMATE_VERSION=4.3.24
 # renovate: datasource=npm depName=node-red-contrib-sonos-plus versioning=npm
-ARG NODE_RED_SONOS_PLUS_VERSION=6.9.3
+ARG NODE_RED_SONOS_PLUS_VERSION=6.9.5
 # renovate: datasource=npm depName=node-red-contrib-sonos-event versioning=npm
 ARG NODE_RED_SONOS_EVENTS_VERSION=1.2.4
 # renovate: datasource=npm depName=node-red-contrib-dwd-local-weather versioning=npm
@@ -35,13 +35,13 @@ ARG NODE_RED_DWD_LOCAL_WEATHER_VERSION=1.0.5
 # renovate: datasource=npm depName=node-red-node-openweathermap versioning=npm
 ARG NODE_RED_OPENWEATHERMAP_VERSION=1.0.1
 # renovate: datasource=npm depName=node-red-contrib-sun-position versioning=npm
-ARG NODE_RED_SUN_POSITION_VERSION=2.2.0-beta4
+ARG NODE_RED_SUN_POSITION_VERSION=2.2.0-beta5
 # renovate: datasource=npm depName=node-red-contrib-blindcontroller versioning=npm
 ARG NODE_RED_BLIND_CONTROLLER_VERSION=4.8.6
 # renovate: datasource=npm depName=node-red-node-ping versioning=npm
 ARG NODE_RED_NODE_PING_VERSION=0.3.3
 # renovate: datasource=npm depName=node-red-contrib-tts-ultimate versioning=npm
-ARG NODE_RED_TTS_ULTIMATE_VERSION=3.0.7
+ARG NODE_RED_TTS_ULTIMATE_VERSION=3.5.0
 # renovate: datasource=npm depName=node-red-contrib-homeconnect versioning=npm
 ARG NODE_RED_HOMECONNECT_VERSION=0.6.8
 # renovate: datasource=npm depName=node-red-contrib-credentials versioning=npm
