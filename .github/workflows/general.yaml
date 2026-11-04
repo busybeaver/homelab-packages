@@ -27,7 +27,7 @@ jobs:
     permissions:
       contents: read
       statuses: write
-    uses: busybeaver/homelab-shared/.github/workflows/general.yaml@1fe0b105070f723a72bfd9040631d3bd1c5650c0 # v1.1.165
+    uses: busybeaver/homelab-shared/.github/workflows/general.yaml@fcdaac42cae05e3a664388343b17fe415a9e7d45 # v1.1.166
     with:
       lintDocker: true
       filterRegexExclude: .*\.github\/linters\/.*
