@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   repository:
-    uses: busybeaver/homelab-shared/.github/workflows/repository.yaml@19e41a036e1f33d3ee39546038a3c08b49958777 # v1.1.168
+    uses: busybeaver/homelab-shared/.github/workflows/repository.yaml@6f27f9b0e09abc07b7690f9fc576ab29ff8e3c9a # v1.1.169
     secrets:
       REPOSITORY_ASSISTANT_APP_ID: ${{ secrets.REPOSITORY_ASSISTANT_APP_ID }}
       REPOSITORY_ASSISTANT_PRIVATE_KEY: ${{ secrets.REPOSITORY_ASSISTANT_PRIVATE_KEY }}
