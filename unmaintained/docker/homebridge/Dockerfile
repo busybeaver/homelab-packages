@@ -62,7 +62,7 @@ ARG HOMEBRIDGE_WEATHER_PLUS_VERSION=3.4.1
 # renovate: datasource=npm depName=homebridge-homeconnect versioning=npm
 ARG HOMEBRIDGE_HOMECONNECT_VERSION=1.12.3
 # renovate: datasource=npm depName=homebridge-dummy versioning=npm
-ARG HOMEBRIDGE_DUMMY_VERSION=1.8.1
+ARG HOMEBRIDGE_DUMMY_VERSION=2.1.4
 # renovate: datasource=npm depName=homebridge-delay-switch versioning=npm
 ARG HOMEBRIDGE_DELAY_SWITCH_VERSION=3.3.1
 # renovate: datasource=npm depName=homebridge-camera-ffmpeg versioning=npm
