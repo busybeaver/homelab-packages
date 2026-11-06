@@ -25,7 +25,7 @@ ARG NODE_RED_HUEMAGIC_VERSION=4.2.2
 # renovate: datasource=npm depName=node-red-node-pushover versioning=npm
 ARG NODE_RED_PUSHOVER_VERSION=0.3.2
 # renovate: datasource=npm depName=node-red-contrib-knx-ultimate versioning=npm
-ARG NODE_RED_KNX_ULTIMATE_VERSION=4.3.24
+ARG NODE_RED_KNX_ULTIMATE_VERSION=8.3.2
 # renovate: datasource=npm depName=node-red-contrib-sonos-plus versioning=npm
 ARG NODE_RED_SONOS_PLUS_VERSION=6.9.5
 # renovate: datasource=npm depName=node-red-contrib-sonos-event versioning=npm
