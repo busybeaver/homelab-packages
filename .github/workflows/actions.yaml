@@ -37,7 +37,7 @@ jobs:
 
     env:
       # renovate: datasource=github-releases depName=jdx/mise
-      MISE_VERSION: v2026.11.0
+      MISE_VERSION: v2026.11.2
       # `mise run` would otherwise also install the local development tools of mise.toml
       MISE_TASK_RUN_AUTO_INSTALL: false
 
