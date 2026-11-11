@@ -68,7 +68,7 @@ ARG HOMEBRIDGE_DELAY_SWITCH_VERSION=3.3.1
 # renovate: datasource=npm depName=homebridge-camera-ffmpeg versioning=npm
 ARG HOMEBRIDGE_CAMERA_FFMPEG_VERSION=3.1.4
 # renovate: datasource=npm depName=homebridge-dyson-pure-cool versioning=npm
-ARG HOMEBRIDGE_DYSON_PURE_COOL_VERSION=2.9.5
+ARG HOMEBRIDGE_DYSON_PURE_COOL_VERSION=2.11.0
 
 # hadolint ignore=SC1091
 RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CACHE_FOLDER}" \
