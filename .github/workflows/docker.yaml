@@ -209,7 +209,7 @@ jobs:
 
     env:
       # renovate: datasource=github-releases depName=jdx/mise
-      MISE_VERSION: v2026.11.5
+      MISE_VERSION: v2026.11.6
 
     steps:
       - name: StepSecurity - Harden Github-hosted Runners
