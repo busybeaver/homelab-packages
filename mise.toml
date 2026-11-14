@@ -20,7 +20,7 @@
 "aqua:hadolint/hadolint" = "2.15.1"
 "github:editorconfig-checker/editorconfig-checker" = "4.0.2"
 "aqua:gitleaks/gitleaks" = "8.30.1"
-"aqua:rvben/rumdl" = "0.3.2" # Markdown, reads the markdownlint config
+"aqua:rvben/rumdl" = "0.3.3" # Markdown, reads the markdownlint config
 
 [settings]
 lockfile = true
