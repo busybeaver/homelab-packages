@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
-FROM louislam/uptime-kuma:2-rootless@sha256:ea1b2ceb6ef710a3d0d994debcc8cded062e534fb901f6e895f59caad68e0a9e
+FROM louislam/uptime-kuma:2-rootless@sha256:d213a1d2b6a7d7c00afbcb936b53f585afea3e1620432b3a161b68bfffa13dac
 
 # TODO: is this still needed after switching to rootless image? if not, remove it
 # override entrypoint.sh file to support rootless execution of the container
