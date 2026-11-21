@@ -21,7 +21,7 @@ USER node-red
 # renovate: datasource=npm depName=node-red-contrib-homekit-bridged versioning=npm
 ARG NODE_RED_HOMEKIT_BRIDGED_VERSION=1.7.3
 # renovate: datasource=npm depName=node-red-contrib-huemagic versioning=npm
-ARG NODE_RED_HUEMAGIC_VERSION=4.2.2
+ARG NODE_RED_HUEMAGIC_VERSION=5.2.0
 # renovate: datasource=npm depName=node-red-node-pushover versioning=npm
 ARG NODE_RED_PUSHOVER_VERSION=0.3.2
 # renovate: datasource=npm depName=node-red-contrib-knx-ultimate versioning=npm
