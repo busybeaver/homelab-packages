@@ -205,4 +205,8 @@ regex = '''pypi-AgEIcHlwaS5vcmc[A-Za-z0-9-_]{50,1000}'''
 tags = ["key", "pypi"]
 
 [allowlist]
-paths = ['^\.?gitleaks.toml$', '(.*?)(png|jpg|gif|doc|docx|pdf|bin|xls|pyc|zip)$', '(go.mod|go.sum)$']
+paths = [
+    '^\.?gitleaks.toml$',
+    '(.*?)(png|jpg|gif|doc|docx|pdf|bin|xls|pyc|zip)$',
+    '(go.mod|go.sum)$'
+]
